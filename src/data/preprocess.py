@@ -1,0 +1,148 @@
+
+from utils.constants import *
+
+from datetime import timedelta
+from scipy import signal, interpolate
+import warnings
+
+#@title Implement Filter Split
+def get_cycles(dfBp,dfImu,t_cc=0.1):
+  ind_cc_bp = []
+  ind_cc_imu = []
+
+  dfBp['Rpk'] = dfBp.ecgTs.round()==4
+  tccs = dfBp.query('Rpk').index-timedelta(seconds=t_cc)
+  dfBp['tsCC'] = False
+  dfImu['tsCC'] = False
+  for tcc_now in tccs:
+    ind_cc_bp.append(dfBp.index.get_loc(tcc_now, method='nearest'))
+    ind_cc_imu.append(dfImu.index.get_loc(tcc_now, method='nearest'))
+
+  dfBp['tsCC'].iloc[ind_cc_bp] = True
+  dfImu['tsCC'].iloc[ind_cc_imu] =True
+
+  dfBp['heartbeat'] = dfBp['tsCC'].cumsum()
+  dfImu['heartbeat'] = dfImu['tsCC'].cumsum()
+  #todo: drop ecgTs,Rpk, tsCC
+
+  return dfBp, dfImu
+
+def myInterp_Fs(df_now, COLS=IMU_DATA_COLS+['heartbeat'], fs=200):
+  start = df_now.index[0].total_seconds()
+  end = df_now.index[-1].total_seconds()
+  dt = 1/fs
+  ts_new = dt*np.arange(0,int(np.ceil((end-start)/dt)))+start
+  td = pd.to_timedelta(ts_new,unit='s')
+  f = interpolate.interp1d(df_now.index.total_seconds().to_list(),df_now[COLS], axis=0,fill_value="extrapolate")
+  y = f(ts_new)
+  df_new = pd.DataFrame(data=y,index=td, columns=COLS)
+  NonNumCols = df_now.columns[~df_now.columns.isin(COLS)]
+  for col in NonNumCols:
+    df_new[col] = df_now[col][0]
+  return df_new
+
+def filterSplit(dfBpCont, dfImuCont,fs=200):
+  # display(dfBpAll) 
+  bp_groups = dfBpCont.groupby('file')
+  imu_groups = dfImuCont.groupby('file')
+
+  dfBpAll = pd.DataFrame()
+  dfImuRawAll = pd.DataFrame()
+  dfImuFiltLpAll = pd.DataFrame()
+  dfImuFiltHpAll = pd.DataFrame()
+  for name, dfBp_now in bp_groups:
+    # display(name)
+    # display(dfBp_now)
+    dfImu_now = imu_groups.get_group(name)
+
+    # Get Cardiac Cycles
+    warnings.filterwarnings('ignore')
+    dfBp_now, dfImu_now = get_cycles(dfBp_now,dfImu_now, t_cc = 0.1)
+    warnings.filterwarnings('default')
+    
+    # Remove 1st/last
+    dfBp_now = dfBp_now[dfBp_now['heartbeat'] != 0]; dfBp_now = dfBp_now[dfBp_now['heartbeat'] != max(dfBp_now['heartbeat'])]
+    dfImu_now = dfImu_now[dfImu_now['heartbeat'] != 0]; dfImu_now = dfImu_now[dfImu_now['heartbeat'] != max(dfImu_now['heartbeat'])]
+    
+    # Interpolate to standard fs
+    dfImuSamp = myInterp_Fs(dfImu_now.interpolate(),fs=fs)
+    dfBpSamp = myInterp_Fs(dfBp_now,COLS=BP_COLS+['heartbeat'],fs=fs)
+    # dfImuSamp, dfBpSamp = nm.load.interpolateDatasets(dfImu_now, dfBp_now)
+
+    dfImuSamp['heartbeat'] = np.floor(dfImuSamp['heartbeat'])
+    dfBpSamp['heartbeat'] = np.floor(dfBpSamp['heartbeat'])
+    
+    # Filter IMU
+    dfImuSamp = dfImuSamp.fillna(method = 'ffill').fillna(method = 'bfill')
+    # dfImuFiltLp = filter_df(dfImuSamp,filt_type='bandstop',fc=fc)
+    # dfImuFiltHp = filter_df(dfImuSamp,filt_type='high',fc=fc)
+    
+    # Remove BP Nans (and in IMU)
+    del_hb = dfBpSamp['heartbeat'][dfBpSamp.sbp.isna()].unique()
+    dfBpSamp = dfBpSamp[~dfBpSamp['heartbeat'].isin(del_hb)]
+    dfImuSamp = dfImuSamp[~dfImuSamp['heartbeat'].isin(del_hb)]
+    # dfImuFiltLp = dfImuFiltLp[~dfImuFiltLp['heartbeat'].isin(del_hb)]
+    # dfImuFiltHp = dfImuFiltHp[~dfImuFiltHp['heartbeat'].isin(del_hb)]
+    # todo: Re-number HBs to 0:len?
+    # Make BP Targets (single value)
+    # try:
+    BpTargets = dfBpSamp.groupby('heartbeat').apply(lambda x: x[BP_COLS].mean())
+    BpTargets['file'] = dfBpSamp.file[0]
+    BpTargets['test_type'] = dfBpSamp.test_type[0]
+    BpTargets['test_num'] = dfBpSamp.test_num[0]
+    BpTargets['patient'] = dfBpSamp.patient[0]
+      # Make IMU raw feats (500 values)
+      # dfImuRaw = interpBeats(dfImuSamp)
+      # Make IMU filt feats(500 values)
+      # dfImuFreqFiltLp = interpBeats(dfImuFiltLp)
+      # dfImuFreqFiltHp = interpBeats(dfImuFiltHp)
+      # Append BP, imu raw, imu filt
+    dfBpAll = dfBpAll.append(BpTargets)
+    dfImuRawAll = dfImuRawAll.append(dfImuSamp)
+      # dfImuFiltLpAll = dfImuFiltLpAll.append(dfImuFreqFiltLp)
+      # dfImuFiltHpAll = dfImuFiltHpAll.append(dfImuFreqFiltHp)
+    # except:
+    #   print("Error with file", print(dfBpSamp.file[0]))
+    
+  return dfBpAll, dfImuRawAll#, dfImuFiltLpAll#, dfImuFiltHpAll
+
+
+#### CLEAN, FIND HBs AND UNIFY VCG & BP ####
+def merge_imu_vcg_with_heartbeats(dfBpAll, dfImuAll):
+  dfBp, dfImuRaw = filterSplit(dfBpAll.set_index('ts'), dfImuAll.set_index('ts'))
+  dfImuRaw['ts'] = dfImuRaw.index.total_seconds()
+  dfImuRaw = dfImuRaw.reset_index(drop=True)
+  dfImuRaw = dfImuRaw.set_index('file')
+
+  dfAll = dfImuRaw.merge(dfBp, how='left', on=INDICIES, suffixes=('','_drop'))
+  dfAll.ts = pd.to_timedelta(dfAll.ts*1e9)
+  dfAll = dfAll.drop(dfAll.columns[dfAll.columns.str.contains('_drop')], axis=1)
+
+  return dfAll
+
+
+#@title Preprocessors - Enforce 3d shape
+from sklearn.preprocessing import StandardScaler, FunctionTransformer
+
+def forceShape(x, nsteps=300):
+  x = x[:nsteps]
+  return np.pad(x, ((0,nsteps-x.shape[0]),(0,0)))
+
+# arrData = np.array(list(dfAll.groupby(INDICIES).apply(lambda x : forceShape(x[['az','ax']].values))))
+
+def explode_3d(input_series, indicies=INDICIES, data_cols=IMU_DATA_COLS, nsteps=300):
+  '''
+    Converts timeseries signals dataframe into 3d matrix of ts samples
+  '''
+  # dfTsVect = input_series[indicies + data_cols].groupby(indicies, sort=False).fillna(0)
+  arrTsExp = np.array(list(
+      input_series\
+        .groupby(indicies)\
+        .apply(lambda x : forceShape(x[['ts']+data_cols].values, nsteps).T)
+      )
+  )
+  return arrTsExp
+
+
+from functools import partial
+TransformerTimeSeriesTo3D = partial(FunctionTransformer, explode_3d)

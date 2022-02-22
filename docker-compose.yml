@@ -1,0 +1,51 @@
+version: '3.4'
+
+services:
+  # datascience-notebook:
+  #   image: jupyter/datascience-notebook
+  #   volumes:
+  #     - .:/home/jovyan/work
+  #   ports:
+  #     - 8888:8888
+  #   container_name: datascience-notebook-container
+  
+  jupyterlab:
+    container_name: template-data-jupyterlab
+    image: data-app
+    env_file:
+      - .env/local.yml
+      - .env/default.yml
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - /Users/amclean/workspace/nipams-data-project/:/app
+    ports:
+      - "8501:8501"
+      - "8888:8888"
+      # - "5678:5678"
+    # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
+    # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
+    # command: "jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root"
+    command: "python3 -m jupyterlab --port=8888 --no-browser --ip=0.0.0.0 --allow-root"
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
+  dashapp:
+    container_name: template-data-dashapp
+    image: data-app
+    env_file:
+      - .env/local.yml
+      - .env/default.yml
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - /Users/amclean/workspace/nipams-data-project/:/app
+    ports:
+      - "8500:8500"
+      # - "8888:8888"
+      - "5678:5678"
+    # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
+    # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
+    # command: "jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root"
+    command: "python3 src/dash_app/index.py"

@@ -1,0 +1,19 @@
+# local package
+# -e .
+### Data ###
+pandas
+google-cloud-storage
+
+### ML ###
+sklearn
+
+### Viz ###
+matplotlib
+ipywidgets
+plotly.express
+jupyter-dash
+
+### Dash App ###
+dash-bootstrap-components
+
+### Setup ###
