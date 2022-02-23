@@ -22,6 +22,7 @@ services:
       - /Users/amclean/workspace/nipams-data-project/:/app
     ports:
       - "8501:8501"
+      - "8502:8502"
       - "8888:8888"
       # - "5678:5678"
     # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"

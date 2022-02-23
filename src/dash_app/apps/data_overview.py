@@ -5,8 +5,6 @@ from dash.dependencies import Input, Output
 from app import app
 
 from .data_table import layout as data_table_layout
-from data import load_data
-# import data_table
 
 
 layout = html.Div([

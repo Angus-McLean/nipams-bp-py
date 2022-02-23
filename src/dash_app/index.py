@@ -18,19 +18,18 @@ dash_global['data_raw_bp'], dash_global['data_raw_imu'] = load_data.load_datafra
 
 from apps import data_load, data_overview, modeling
 
-sidenav = html.Div([
+sidenav = dbc.Col([
     html.H1('🩺', style={"textAlign": "center"}),
     html.H1('Nipams VCG Analysis', style={"textAlign": "center"}),
 
     dbc.ButtonGroup(    # https://dash-bootstrap-components.opensource.faculty.ai/docs/components/button_group/
         [
-            dbc.Button(children=[dbc.NavItem(dbc.NavLink('Data Load', href='/apps/data_load'))]),
-            dbc.Button(children=[dbc.NavItem(dbc.NavLink('Data Overview', href='/apps/data_overview'))]),
-            dbc.Button(children=[dbc.NavItem(dbc.NavLink('Modeling', href='/apps/modeling'))]),
+            dbc.Button(children=[dbc.NavItem(dbc.NavLink('Data Load', href='/apps/data_load'))], outline=True),
+            dbc.Button(children=[dbc.NavItem(dbc.NavLink('Data Overview', href='/apps/data_overview'))], outline=True),
+            dbc.Button(children=[dbc.NavItem(dbc.NavLink('Modeling', href='/apps/modeling'))], outline=True),
         ],
-        vertical=True,
-    )
-], className="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark")
+        vertical=True,)
+], className="d-flex flex-column flex-shrink-0 p-2 m-2")
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -38,9 +37,9 @@ app.layout = html.Div([
         dbc.Col([
             sidenav
         ], width={'size':3}),
-        dbc.Col([
+        dbc.Col([dbc.CardBody([
             html.Div(id='page-content', children=[]),
-        ], width={'size':9}),
+        ])], width={'size':9}),
     ]),
     dcc.Store(id='data-raw'),   # https://dash.plotly.com/sharing-data-between-callbacks
     dcc.Store(id='data-filtered')

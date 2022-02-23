@@ -6,7 +6,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
-EXPOSE 8501
 
 # Install pip requirements
 COPY requirements.txt .
@@ -28,6 +27,8 @@ EXPOSE 5678
 ###########START NEW IMAGE : JUPYTER ###################
 RUN pip install notebook jupyterlab
 EXPOSE 8888
+EXPOSE 8501
+EXPOSE 8502
 
 WORKDIR /app
 

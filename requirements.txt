@@ -15,5 +15,8 @@ jupyter-dash
 
 ### Dash App ###
 dash-bootstrap-components
+redis
+fakeredis
+pyarrow
 
 ### Setup ###
