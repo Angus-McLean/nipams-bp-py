@@ -1,4 +1,4 @@
-print('dash_table.py')
+print('\nnipams - ','dash_table.py')
 import json
 import pandas as pd
 import plotly.express as px
@@ -75,8 +75,8 @@ def split_filter_part(filter_part):
 def update_table(rows, sort_by, filter):
     # filter = filter or ''
     # sort_by = sort_by or []
-    print('update_table', sort_by, filter)
-    print('context', json.dumps({'triggered': list(map(lambda x:x['prop_id'], dash.callback_context.triggered))}))
+    print('\nnipams - ','update_table', sort_by, filter)
+    print('\nnipams - ','context', json.dumps({'triggered': list(map(lambda x:x['prop_id'], dash.callback_context.triggered))}))
 
     filtering_expressions = filter.split(' && ')
     dff = pd.DataFrame(rows)
@@ -124,7 +124,7 @@ def update_table(rows, sort_by, filter):
     Input('table-paging', "page_current"),
     Input('table-paging', "page_size"))
 def update_table_paging(rows, page_current, page_size):
-  print('update_table_paging',len(rows), page_current, page_size)
+  print('\nnipams - ','update_table_paging',len(rows), page_current, page_size)
   dff = pd.read_json(rows, orient='split')
   return dff.iloc[
       page_current*page_size: (page_current + 1)*page_size

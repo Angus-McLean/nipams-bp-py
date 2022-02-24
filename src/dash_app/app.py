@@ -1,4 +1,4 @@
-print('app.py')
+print('\nnipams - ','app.py')
 import dash
 import dash_bootstrap_components as dbc
 from dash import html
@@ -6,7 +6,7 @@ import os
 
 
 
-print('Starting Dash!')
+print('\nnipams - ','Starting Dash!')
 # app = dash.Dash('app')
 
 ## styles

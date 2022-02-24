@@ -1,4 +1,4 @@
-print('index.py')
+print('\nnipams - ','index.py')
 from dash import dcc, html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
@@ -13,7 +13,7 @@ import os, sys; sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__
 from apps.dash_global import dash_global
 from data import load_data
 # from ... import data
-print('Setting data_raw')
+print('\nnipams - ','Setting data_raw')
 dash_global['data_raw_bp'], dash_global['data_raw_imu'] = load_data.load_dataframe_from_mat('data/raw_mat')
 
 from apps import data_load, data_splitting, modeling, evaluation, prediction
@@ -44,13 +44,18 @@ app.layout = html.Div([
         ])], width={'size':9}),
     ]),
     dcc.Store(id='data-raw'),   # https://dash.plotly.com/sharing-data-between-callbacks
-    dcc.Store(id='data-filtered')
+    dcc.Store(id='data-filtered'),
+
+    dcc.Store(id='page_data_load_output', storage_type='session'),
+    dcc.Store(id='data_splitting_page_out', storage_type='session'),
+    dcc.Store(id='data_modeling_page_out', storage_type='session'),
+    dcc.Store(id='evaluation_page_out', storage_type='session'),
 ])
 
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    print('dash loading! asdf!', pathname)
+    print('\nnipams - ','dash loading! asdf!', pathname)
     if pathname == '/apps/data_load':
         return data_load.layout
     if pathname == '/apps/data_splitting':

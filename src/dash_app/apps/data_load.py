@@ -1,4 +1,4 @@
-print('data_overview.py')
+print('\nnipams - ','data_overview.py')
 import dash
 from dash import callback, html, dcc, Input, Output, State, MATCH
 import dash_bootstrap_components as dbc
@@ -37,7 +37,7 @@ layout = dbc.Col([
         #     html.Div(id='filter_table')
         # ], color='primary', spinner_style={'width':'5rem','height':'5rem'}),
     ], style={'textAlign':'center'}),
-    dcc.Store(id='page_data_load_output')
+    
 ])
 
 @app.callback(
@@ -46,7 +46,7 @@ layout = dbc.Col([
     Input(input_data_comp.ids.store('input_data_comp'), 'data')
 )
 def from_input_to_filter(df_key):
-    print('from_input_to_filter', df_key)
+    print('\nnipams - ','from_input_to_filter', df_key)
     df = redis_store.load(df_key)
     return DataTableAIO(df=df, aio_id='filter_data_comp')
     # return {"df":df_key}
@@ -56,7 +56,7 @@ def from_input_to_filter(df_key):
     Input(filter_data_comp.ids.store_out('filter_data_comp'), 'data')
 )
 def from_filter_to_overview(df):
-    print('from_filter_to_overview', df)
+    print('\nnipams - ','from_filter_to_overview', df)
     return df
 
 @app.callback(
@@ -64,6 +64,6 @@ def from_filter_to_overview(df):
     Input('confirm_data_load_page', 'n_clicks'), State(filter_data_comp.ids.store_out('filter_data_comp'), 'data')
 )
 def from_confirm_to_output(n_clicks, df_key):
-    print('from_overview_to_output', n_clicks, df_key)
+    print('\nnipams - ','data_load page from_overview_to_output', n_clicks, df_key)
     if n_clicks is None:raise PreventUpdate
     return df_key

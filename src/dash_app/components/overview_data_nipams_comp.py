@@ -25,7 +25,7 @@ def summarize_vcg_data(df):
         }
 
 def agg_vcg_data(df):
-    if df.empty: print('agg_vcg_data', 'Empty DataFrame');return pd.DataFrame()
+    if df.empty: print('\nnipams - ','agg_vcg_data', 'Empty DataFrame');return pd.DataFrame()
     df = pd.concat([
         df.agg(['nunique']),
         df.describe(),

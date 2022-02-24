@@ -16,7 +16,7 @@ class EmptyStoreAIO(html.Div):
     
     def __init__(self, aio_id=None, data_in=None, store_in=None, verbose=False):
         if aio_id is None: aio_id = str(uuid.uuid4())
-        if verbose : print("EmptyStoreAIO.__init__", self.COMP_NAME, aio_id, data_in, store_in, '\n')
+        if verbose : print('\nnipams - ',"EmptyStoreAIO.__init__", self.COMP_NAME, aio_id, data_in, store_in, '\n')
     
         if data_in is not None: store_in = redis_store.save(data_in)
     
@@ -31,7 +31,7 @@ class EmptyStoreAIO(html.Div):
     @callback([Output(ids.store_out(MATCH),'data'),Output(ids.text_state(MATCH),'children'),], 
         Input(ids.store_in(MATCH), 'data'))
     def from_in_to_out(df_key):
-        print("EmptyStoreAIO.from_in_to_out", df_key, '\n')
+        print('\nnipams - ',"EmptyStoreAIO.from_in_to_out", df_key, '\n')
         df_key_out = df_key
         # df = redis_store.load(df_key); 
         # df_key_out = redis_store.save(df)
@@ -53,7 +53,7 @@ class JsonInputAIO(html.Div):
     
     def __init__(self, aio_id=None, options={}, store_in=None, verbose=False):
         if aio_id is None: aio_id = str(uuid.uuid4())
-        if verbose : print("JsonInputAIO.__init__", self.COMP_NAME, aio_id, store_in)
+        if verbose : print('\nnipams - ',"JsonInputAIO.__init__", self.COMP_NAME, aio_id, store_in)
     
         options_inv = {v: k for k, v in options.items()}
     
@@ -78,7 +78,7 @@ class JsonInputAIO(html.Div):
     @callback(Output(ids.input_textarea(MATCH),'value'), 
         Input(ids.input_dropdown(MATCH), 'value'))
     def from_dropdown_to_textarea(value):
-        print("JsonInputAIO.from_dropdown_to_textarea", value)
+        print('\nnipams - ',"JsonInputAIO.from_dropdown_to_textarea", value)
         # df_key_out = df_key
         # df = redis_store.load(df_key); 
         # df_key_out = redis_store.save(df)
@@ -89,7 +89,7 @@ class JsonInputAIO(html.Div):
         Input(ids.confirm_button(MATCH), 'n_clicks'),
         State(ids.input_textarea(MATCH), 'value'),)
     def from_confirm_to_out(n_clicks, text_input=''):
-        print("JsonInputAIO.from_confirm_to_out", text_input, n_clicks)
+        print('\nnipams - ',"JsonInputAIO.from_confirm_to_out", text_input, n_clicks)
         if n_clicks is None:raise PreventUpdate
         return text_input
 

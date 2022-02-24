@@ -209,7 +209,7 @@ class DataTableAIO(html.Div):
         State(ids.store(MATCH), 'data')
     )
     def filter(filter, store):
-        print('datatable_comp', 'filter', filter, store)
+        print('\nnipams - ','datatable_comp', 'filter', filter, store)
         df = redis_store.load(store['df'])
         df = DataTableAIO.filter_df(df, filter)
         # self.__init__(df, self.aio_id)

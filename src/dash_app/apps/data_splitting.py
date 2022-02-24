@@ -1,7 +1,9 @@
-print('data_splitting.py')
+print('\nnipams - ','data_splitting.py')
 from dash import html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
+from dash_app.cache import redis_store
+
 from dash_app.components.basic_comps import JsonInputAIO
 
 from app import app
@@ -45,7 +47,6 @@ layout = dbc.Col([
             dbc.Button(id='confirm_splitting', children=['Confirm Experiment Design'])
         ], style={'textAlign':'center'}),
     ]),
-    dcc.Store(id='data_splitting_page_out')
 ])
 
 @app.callback(
@@ -54,14 +55,14 @@ layout = dbc.Col([
     State('page_data_load_output','data')
 )
 def from_empty_to_text(split_key, df_key):
-    print("page from_empty_to_text",split_key, df_key)
-    # df = redis_store.load(df_key)
-    return "Experiment Output : " + str(split_key) + "\nLoaded Data : " + str(df_key)
+    print('\nnipams - ',"page from_empty_to_text",split_key, df_key)
+    df = redis_store.load(df_key)
+    return "Experiment Output : " + str(split_key) + "\nLoaded Data Shape : \n" + str(df.shape)
 
 @app.callback(Output('data_splitting_page_out','data'),
               Input('confirm_splitting', 'n_clicks'), State(json_input_split.ids.store_out('json_input_split'), 'data'))
-def from_confirm_to_pageout(n_clicks, df_key):
+def from_confirm_to_pageout(n_clicks, split_json):
     if n_clicks is None: raise PreventUpdate
-    print("page from_confirm_to_pageout", df_key)
-    # df = redis_store.load(df_key)
-    return "Page Output : " + str(df_key)
+    print('\nnipams - ',"page from_confirm_to_pageout", split_json)
+    # df = redis_store.load(split_json)
+    return str(split_json)

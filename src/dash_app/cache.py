@@ -90,7 +90,7 @@ class redis_store:
             else:
                 value = json.loads(serialized_value)
         except Exception as e:
-            print(e)
-            print(f'ERROR LOADING {data_type - hash_key}')
+            print('\nnipams - ',e)
+            print('\nnipams - ',f'ERROR LOADING {data_type - hash_key}')
             raise e
         return value

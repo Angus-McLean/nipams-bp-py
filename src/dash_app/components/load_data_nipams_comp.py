@@ -16,7 +16,7 @@ class PythonDataLoaderAIO(html.Div):
     
     def __init__(self, title="", aio_id=None):
         if aio_id is None: aio_id = str(uuid.uuid4())
-        print('PythonDataLoaderAIO.__init__', aio_id)
+        print('\nnipams - ','PythonDataLoaderAIO.__init__', aio_id)
     
         super().__init__([
             dbc.Card([
@@ -40,7 +40,7 @@ class PythonDataLoaderAIO(html.Div):
     
     @callback(Output(ids.msg(MATCH),'children'), Input(ids.store(MATCH),'data'))
     def print_success_msg(data):
-        print('print_success_msg', data)
+        print('\nnipams - ','print_success_msg', data)
         # if n== 0 : return '', False
         df = redis_store.load(data)
         return 'Success! Loaded DataFrame ({} rows x {} columns)'.format(*df.shape)
@@ -49,10 +49,10 @@ class PythonDataLoaderAIO(html.Div):
         Output(ids.store(MATCH),'data'),
         State(ids.dropdown(MATCH),'value'), Input(ids.button(MATCH),'n_clicks'))
     def load_data(types, n):
-        print('input-file-pattern, button-load', types, n)
+        print('\nnipams - ','input-file-pattern, button-load', types, n)
         # if n== 0 : return '', False
         dfAll = load_data.load_dataframe_from_pickle('data/interim', '|'.join(types or []))
         dfAll.ts = dfAll.ts.astype(int)
         df_key = redis_store.save(dfAll)
-        print('input-file-pattern, button-load', df_key, str(dfAll.shape))
+        print('\nnipams - ','input-file-pattern, button-load', df_key, str(dfAll.shape))
         return df_key

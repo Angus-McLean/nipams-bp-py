@@ -1,4 +1,4 @@
-print('data_modeling.py')
+print('\nnipams - ','data_modeling.py')
 from dash import html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
@@ -7,7 +7,8 @@ from dash_app.components.basic_comps import JsonInputAIO
 from app import app
 
 options_modeling = {
-    'Split By Random' : '{}'
+    'Modeling Pipeline 1' : '{"modeling":"config"}',
+    'Modeling Pipeline 2' : '{"modeling":"config2"}'
 }
 
 json_input_model = JsonInputAIO('json_input_model', options_modeling)
@@ -31,22 +32,36 @@ layout = dbc.Col([
             dbc.Button(id='confirm_modeling', children=['Confirm Model Design'])
         ], style={'textAlign':'center'}),
     ]),
-    dcc.Store(id='data_modeling_page_out')
 ])
 
 @app.callback(
     Output('model-overview','children'),
-    Input(json_input_model.ids.store_out('json_input_model'), 'data')
+    Input(json_input_model.ids.store_out('json_input_model'), 'data'),
+    State('page_data_load_output','data'),
+    State('data_splitting_page_out','data')
 )
-def from_empty_to_text(df_key):
-    print("page from_empty_to_text", df_key)
-    # df = redis_store.load(df_key)
-    return "Model Output : " + str(df_key)
+def from_empty_to_text(model_key, df_key, split_json):
+    print('\nnipams - ',"page from_empty_to_text", model_key)
+    # df = redis_store.load(model_key)
+    return ["Model Output : " , str(model_key) , '\n Data Frame : ',df_key , '\n Split Data : ',split_json]
 
 @app.callback(Output('data_modeling_page_out','data'),
-              Input('confirm_modeling', 'n_clicks'), State(json_input_model.ids.store_out('json_input_model'), 'data'))
-def from_confirm_to_pageout(n_clicks, df_key):
+    Input('confirm_modeling', 'n_clicks'), 
+    State(json_input_model.ids.store_out('json_input_model'), 'data'),
+    State('page_data_load_output','data'),
+    State('data_splitting_page_out','data')
+)
+def from_confirm_to_pageout(n_clicks, model_json, df_key, split_json):
     if n_clicks is None: raise PreventUpdate
-    print("page from_confirm_to_pageout", df_key)
+    print('\nnipams - ',"modeling page from_confirm_to_pageout", model_json, df_key, split_json)
     # df = redis_store.load(df_key)
-    return "Page Output : " + str(df_key)
+
+    ### FINALIZE SPLIT
+    
+    ### TRAIN MODEL HERE ###
+
+
+    ### RETURN TEST SET PREDICTIONS ### (likely need to write multiple things to State)
+    return {
+        'model_json' :  model_json,
+    }

@@ -1,2 +1,2 @@
-print('dash_global.py')
+print('\nnipams - ','dash_global.py')
 dash_global = {}

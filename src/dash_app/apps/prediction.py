@@ -1,4 +1,4 @@
-print('prediction.py')
+print('\nnipams - ','prediction.py')
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
