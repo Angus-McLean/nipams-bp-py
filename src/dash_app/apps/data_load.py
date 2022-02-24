@@ -32,11 +32,11 @@ layout = dbc.Col([
     overview_data_comp,
     dbc.CardBody([
         html.H4("Finalize Selection", className="card-title", style={"textAlign": "center"}),
-        dbc.Button(id='', children=['Confirm Selection'])
+        dbc.Button(id='confirm_data_load_page', children=['Confirm Selection'])
         # dbc.Spinner([
         #     html.Div(id='filter_table')
         # ], color='primary', spinner_style={'width':'5rem','height':'5rem'}),
-    ]),
+    ], style={'textAlign':'center'}),
     dcc.Store(id='page_data_load_output')
 ])
 
@@ -61,8 +61,9 @@ def from_filter_to_overview(df):
 
 @app.callback(
     Output('page_data_load_output','data'),
-    Input(filter_data_comp.ids.store_out('filter_data_comp'), 'data')
+    Input('confirm_data_load_page', 'n_clicks'), State(filter_data_comp.ids.store_out('filter_data_comp'), 'data')
 )
-def from_overview_to_output(df):
-    print('from_overview_to_output', df)
-    return df
+def from_confirm_to_output(n_clicks, df_key):
+    print('from_overview_to_output', n_clicks, df_key)
+    if n_clicks is None:raise PreventUpdate
+    return df_key

@@ -1,3 +1,4 @@
+from fileinput import filename
 import json
 import uuid
 from utils.constants import *
@@ -31,6 +32,22 @@ def agg_vcg_data(df):
     ], axis=0)
     return df.round(3).reset_index()
 
+
+
+def build_timeline(df):
+    filename = df.file.sample().values[0]
+    df_ = df[filename == df.file].reset_index(drop=True)
+
+    return html.Div([
+        html.H4("Individual Experiment Timeline"),
+        html.P("Selected File : "+ filename, style={'position':'relative','marginBottom':'-1em','zIndex':'1'}),
+        dcc.Graph(figure=px.line(df_.select_dtypes(include=np.number).drop('ts',axis=1))),
+        html.Div([
+            html.B("Multivariate Time Series"),
+            html.P("Birds-Eye-View of all Signals collected for individual patient-test."),
+        ], style={'position':'relative','marginTop':'-2em'})
+    ])
+
 def build_sunburst(df):
     path_cols = ['test_type','patient','test_num']
     df_res = df.groupby(path_cols).agg({
@@ -38,23 +55,46 @@ def build_sunburst(df):
         'sbp':'mean',
         'dbp':'mean',
     }).reset_index()
-    return dcc.Graph(figure=px.sunburst(df_res, path=path_cols, values='heartbeat', color='sbp'))
+
+    return html.Div([
+        html.H4("Overview Length of Tests", style={'position':'relative','marginBottom':'-1em','zIndex':'1'}),
+        dcc.Graph(figure=px.sunburst(df_res, path=path_cols, values='heartbeat', color='sbp')),
+        html.Div([
+            html.B("Hierarchical Pie Chart"),
+            html.P("Visual breakdown of total signal data for different ExperimentTypes (HLV, LLL, etc), Patients and TestNumbers. Colored by BP."),
+        ], style={'position':'relative','marginTop':'-2em'})
+    ])
 
 def build_scatter(df):
-    df_scat = df.groupby(['test_type','file'])['ax','ay','az'].std().round(3).reset_index()
-    return dcc.Graph(figure=px.scatter_3d(df_scat, x='ax',y='ay',z='az', hover_name='file', color='test_type'))
+    df_scat = df.groupby(['test_type','file'])['sbp','dbp','pp'].mean().round(3).reset_index()
+    return html.Div([
+        html.H4("Blood Pressure Averages", style={'position':'relative','marginBottom':'-1em','zIndex':'1'}),
+        dcc.Graph(figure=px.scatter_3d(df_scat, x='sbp',y='dbp',z='pp', hover_name='file', color='test_type')),
+        html.Div([
+            html.B("3D Scatter Plot"),
+            html.P("Plot the mean Blood Pressure values for different Patient-Test segments. Color by Test Type"),
+        ], style={'position':'relative','marginTop':'-2em'})
+    ])
+
+    
 
 
 def build_graphs(data):
+    
     return dbc.CardBody([
+        dbc.Row([dbc.Col([
+                build_timeline(data),
+            ], style={'textAlign':'center'})
+        ], className="mb-5"),
         dbc.Row([
-            dbc.Col(["Sunburst", 
-                build_sunburst(data)
-            ]),
-            dbc.Col(["Numerics",
-                build_scatter(data)
-            ])
-        ])
+            dbc.Col([
+                build_sunburst(data),
+            ], className='s12 col-6', style={'textAlign':'center'}),
+            dbc.Col([
+                build_scatter(data),
+            ], className='s12 col-6', style={'textAlign':'center'})
+        ]),
+
     ])
 
 class NipamsDataOverviewAIO(html.Div):

@@ -55,6 +55,7 @@ class redis_store:
 
     @staticmethod
     def save(value):
+        if value is None : return
         if isinstance(value, pd.DataFrame):
             buffer = io.BytesIO()
             value.to_parquet(buffer, compression='gzip')
@@ -80,6 +81,7 @@ class redis_store:
 
     @staticmethod
     def load(hash_key):
+        if hash_key is None : return
         data_type = redis_store.r.get(f'_dash_aio_components_type_{hash_key}')
         serialized_value = redis_store.r.get(f'_dash_aio_components_value_{hash_key}')
         try:

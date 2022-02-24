@@ -146,7 +146,7 @@ class DataTableAIO(html.Div):
             dcc.Store(data=store_data, id=self.ids.store(aio_id)),
             dcc.Store(data=store_data, id=self.ids.store_out(aio_id)),
             dash_table.DataTable(id=self.ids.datatable(aio_id), **derived_kwargs)
-        ])
+        ], style={'overflowX':'scroll'})
 
     def filter_df(df, filter_query):
         """Filter a Pandas dataframe as per the `filter_query` provided by
