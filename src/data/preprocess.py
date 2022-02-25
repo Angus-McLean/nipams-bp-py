@@ -129,8 +129,31 @@ def forceShape(x, nsteps=300):
   return np.pad(x, ((0,nsteps-x.shape[0]),(0,0)))
 
 # arrData = np.array(list(dfAll.groupby(INDICIES).apply(lambda x : forceShape(x[['az','ax']].values))))
+import itertools
+def explode_3d(dfImu, indicies=INDICIES, data_cols=IMU_DATA_COLS, nsteps=190):
+  '''
+    Converts timeseries signals dataframe into 3d matrix of ts samples
+  '''
+  dfInds = dfImu.groupby(indicies).first()
 
-def explode_3d(input_series, indicies=INDICIES, data_cols=IMU_DATA_COLS, nsteps=300):
+  df_ = pd.DataFrame(itertools.product(dfInds.index, range(nsteps)), columns=['ind','step'])
+  df_ = pd.concat([df_, pd.DataFrame(df_['ind'].to_list(), columns=indicies)], axis=1).drop('ind', axis=1)
+
+  dfImu['step'] = dfImu.groupby(indicies).file.cumcount()
+  dfOut = df_.merge(dfImu, on=INDICIES+['step'], how='left').set_index(INDICIES)
+  dfOut[IMU_DATA_COLS] = dfOut[IMU_DATA_COLS].fillna(method='ffill')
+  # dfOut[TS] = dfOut.groupby(INDICIES)[TS].interpolate()
+  dfOut[TS] = dfOut[TS].fillna(method='ffill')
+  dfOut = dfOut[[TS]+data_cols]
+  arrOut = dfOut.values.reshape(-1, nsteps, len(dfOut.columns))
+  return arrOut
+
+def Explode_3D_Transformer(indicies=INDICIES, data_cols=IMU_DATA_COLS, nsteps=190):
+  tsExplodeTransform = FunctionTransformer(partial(explode_3d, indicies=indicies, data_cols=data_cols, nsteps=nsteps))
+  return tsExplodeTransform
+
+
+def explode_3d_old(input_series, indicies=INDICIES, data_cols=IMU_DATA_COLS, nsteps=170):
   '''
     Converts timeseries signals dataframe into 3d matrix of ts samples
   '''

@@ -69,7 +69,7 @@ def calculate_BP_from_VCG(df_vcg, params={'k1':1.,'k2':1.}, pluginFns={}):
   # dXp_y, vXp_y = displacement(df_vcg['ay'])
   dXp_z, vXp_z = displacement(df_vcg['az'])
   # dXp_Norm = np.linalg.norm(np.array([dXp,dXp_y,dXp_z]), axis=0)
-  dXp_Norm = np.linalg.norm(np.array([dXp,dXp_z]), axis=0)
+  dXp_Norm = np.linalg.norm(np.array([np.nan_to_num(dXp,1.),np.nan_to_num(dXp_z,1.)]), axis=0)
   
   # dAar, vAar = displacement(vcg_aar)
   # deltaDisp = dXp - dAar
@@ -120,15 +120,17 @@ class AnalyticalBPEstimatorFixed(BaseEstimator):
 
     # closest = np.argmin(euclidean_distances(X, self.X_), axis=1)
     y_preds = []
+    # print('AnalyticalBPEstimator.predict', X.shape)
     for row in X:
-      dfHeartBeat = pd.DataFrame(row.T, columns=['ts','az','ax']).replace(0, np.NaN).set_index('ts').dropna()
+      dfHeartBeat = pd.DataFrame(row, columns=['ts','az','ax']).replace(0, np.NaN).set_index('ts').dropna()
       y_pred = calculate_BP_from_VCG(dfHeartBeat[dfHeartBeat.index!=0], params={'k1':self.k1, 'k2':self.k2})
       y_preds.append(y_pred[0] if self.target=='sbp' else y_pred[1])
     
     return np.array(y_preds).clip(40,180)
   
   def score(self, rows, y):
-    return np.abs((self.predict(rows))-y)
+    # return 1
+    return np.abs((self.predict(rows))-y).fillna(0).mean()
 
 
 from sklearn.model_selection import GridSearchCV

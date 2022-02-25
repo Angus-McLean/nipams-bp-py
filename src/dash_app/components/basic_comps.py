@@ -60,10 +60,10 @@ class JsonInputAIO(html.Div):
         super().__init__([
             dbc.CardBody([
                 html.H1(['']),
-                dbc.Row([dcc.Dropdown(id=self.ids.input_dropdown(aio_id), options=options_inv)]),
+                dbc.Row([dcc.Dropdown(id=self.ids.input_dropdown(aio_id), options=options_inv, persistence=True)]),
                 html.H1(['']),
                 dbc.Row([
-                    dcc.Textarea(id=self.ids.input_textarea(aio_id), placeholder="Select Sample Input..", style={'height':'140px'})
+                    dcc.Textarea(id=self.ids.input_textarea(aio_id), placeholder="Select Sample Input..", style={'height':'140px'}, persistence=True)
                 ]),
                 html.H1(['']),html.H1(['']),
                 dbc.Row([dbc.Button(["Confirm Text Input"],id=self.ids.confirm_button(aio_id))]),

@@ -7,10 +7,10 @@ services:
   #     - .:/home/jovyan/work
   #   ports:
   #     - 8888:8888
-  #   container_name: datascience-notebook-container
+  #   container_name: nipams-notebook-container
   
   jupyterlab:
-    container_name: template-data-jupyterlab
+    container_name: nipams-data-jupyterlab
     image: data-app
     env_file:
       - .env/local.yml
@@ -32,7 +32,7 @@ services:
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
   dashapp:
-    container_name: template-data-dashapp
+    container_name: nipams-data-dashapp
     image: data-app
     env_file:
       - .env/local.yml

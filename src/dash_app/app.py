@@ -18,8 +18,14 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True,
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0'}],
                 # assets_url_path=os.getcwd() + 'src/dash_app/assets/',
-                external_stylesheets=[dbc.themes.BOOTSTRAP]
-                )
+                external_stylesheets=[
+                    dbc.themes.BOOTSTRAP, 
+                    # dbc.icons.BOOTSTRAP,
+                    # dbc.icons.FONT_AWESOME,
+                    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css",
+                    # "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+                ]
+            )
 server = app.server
 app.layout = html.Div([html.P("Dash App Running!")])
 

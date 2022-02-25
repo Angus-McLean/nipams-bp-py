@@ -11,16 +11,16 @@ from sklearn.model_selection import KFold, ShuffleSplit, TimeSeriesSplit, GroupK
 ## All split_by_* functions return [{'train':<indices for train set>, 'test':<indices for test set>},...]
 
 ## Randomly assign samples to train & test set
-def split_by_random(dfImu, dfBp, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'test_size':0.2, 'random_state':0}):
+def split_by_random(dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'test_size':0.2, 'random_state':0}):
   # print('random_split')
-  dfAllInds = dfImu.reset_index()[indices].drop_duplicates()
+  dfAllInds = dfBp.reset_index()[indices].drop_duplicates()
   arrFoldInds = random_split_indices(dfAllInds, split_kwargs)
   return arrFoldInds
   # return get_experiment(arrFoldInds, dfImu, dfBp)
 
 ## https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html#sklearn.model_selection.GroupKFold
-def split_by_group(group_col, dfImu, dfBp, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4}):
-  dfAllInds = dfImu.reset_index()[indices+[group_col]].drop_duplicates()
+def split_by_group(group_col=None, dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4}):
+  dfAllInds = dfBp.reset_index()[indices+[group_col]].drop_duplicates()
   # n_groups = dfAllInds[group_col].nunique() // split_kwargs['n_splits']
   gkf = GroupKFold(n_splits=split_kwargs['n_splits'])
   
@@ -34,7 +34,7 @@ def split_by_group(group_col, dfImu, dfBp, indices=['file', 'heartbeat'], split_
 
 # maybe use PredefinedSplit instead?
 ### fix this fn.. dfAllInds isn't being used. Should use dfTrainInds and dfTestInds to create the train&test indices..
-def split_by_query(trainQ, testQ=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'random_state':0}):
+def split_by_query(trainQ=None, testQ=None, dfBp=None, indices=['file', 'heartbeat'], dfImu=None, split_kwargs={'n_splits':4, 'random_state':0}):
   dfAllInds = dfBp.reset_index().drop_duplicates()
 
   # trainQ = 'index==index' if trainQ=='' else trainQ
@@ -53,7 +53,7 @@ def split_by_query(trainQ, testQ=None, dfBp=None, indices=['file', 'heartbeat'],
 
   return arrFoldInds
 
-def random_split_indices(dfInds, split_kwargs):
+def random_split_indices(dfInds=None, split_kwargs={}):
   # print('random_split_indices')
   sss = ShuffleSplit(**split_kwargs)
 
@@ -76,7 +76,6 @@ def get_experiment(foldInds, dfImu, dfBp):
   }
   
   return experimentDfs
-  
 
 def get_experiment_df(df, dfInds):
   # print('get_experiment_df', df.reset_index().columns, dfInds.columns)
@@ -106,6 +105,23 @@ def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS
       if verbose : print('mean_absolute_error, r2_score : ', round(resultsObj['mean_absolute_error'], 3), round(resultsObj['r2_score'], 3))
         
     return testResults
+
+import json
+
+
+### TODO : this isn't quite working yet
+def get_splits_from_json_and_df(json_str, dfAll):
+    print("nipams - experiments - get_splits_from_json_and_df", json_str, dfAll)
+    dfBp = dfAll[INDICIES + INFO_COLS + BP_COLS]
+
+    splitting_config = json.loads(json_str)
+  
+    sampleRandTestInds = locals()[splitting_config['function']](dfBp=dfBp, **splitting_config['kwargs'])
+    # sampleRandTestInds = getattr(experiments, splitting_config['function'])(dfBp=dfBp, **splitting_config['kwargs'])
+    
+    return sampleRandTestInds
+
+
 
 
 ### PLOTTING RESULTS ###
