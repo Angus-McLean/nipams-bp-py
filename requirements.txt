@@ -1,5 +1,8 @@
 # local package
 # -e .
+# pytorch-cpu
+# tsai
+
 ### Data ###
 pandas
 google-cloud-storage
