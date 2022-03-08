@@ -12,7 +12,7 @@ Work in progress.. Python repository for all aspects of exploratory analysis, pr
 - Visit the following link : http://localhost:8501/
 
 # Start Coding!
-## Setting /.env folder
+## Setting /env folder
 - Overview : 
 - What to include : 
     1. GIT Creds (User, Token)

@@ -21,26 +21,30 @@ from sklearn.preprocessing import FunctionTransformer
 
 
 options_modeling = {
-    'pipe_random' : """Pipeline([
-            ('reshape_vcg', preprocess.Explode_3D_Transformer()),
-            ('rand', models.baselines.RandomRegressor())
-        ])""",
-    'pipe_mean' : """Pipeline([
-            ('reshape_vcg', preprocess.Explode_3D_Transformer()),
-            ('rand', models.baselines.DummyRegressor())
-        ])""",
-    'pipe_mvd' : """Pipeline([
-            ('reshape_vcg', preprocess.Explode_3D_Transformer(
-                data_cols=['az','ax']
-            )),
-            ('rand', models.analytical_mvd.AnalyticalBPEstimator())
-        ])""",    
-    'pipe_randomforest' : """Pipeline([
-            ('vectorize_vcg', sklearn.preprocessing.FunctionTransformer(
-                features.simple.vectorize_mean_std
-            )),
-            ('rand', models.baselines.RandomRegressor())
-        ])""",
+    'pipe_random' : """
+Pipeline([
+    ('reshape_vcg', preprocess.Explode_3D_Transformer()),
+    ('rand', models.baselines.RandomRegressor())
+])""",
+    'pipe_mean' : """
+Pipeline([
+    ('reshape_vcg', preprocess.Explode_3D_Transformer()),
+    ('rand', models.baselines.DummyRegressor())
+])""",
+    'pipe_mvd' : """
+Pipeline([
+    ('reshape_vcg', preprocess.Explode_3D_Transformer(
+        data_cols=['az','ax']
+    )),
+    ('rand', models.analytical_mvd.AnalyticalBPEstimator())
+])""",    
+    'pipe_randomforest' : """
+Pipeline([
+    ('vectorize_vcg', sklearn.preprocessing.FunctionTransformer(
+        features.simple.vectorize_mean_std
+    )),
+    ('rand', models.baselines.RandomRegressor())
+])""",
 
 }
 
