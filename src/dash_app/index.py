@@ -14,7 +14,6 @@ from apps.dash_global import dash_global
 from data import load_data
 # from ... import data
 # print('\nnipams - ','Setting data_raw')
-# dash_global['data_raw_bp'], dash_global['data_raw_imu'] = load_data.load_dataframe_from_mat('data/raw_mat')
 
 from apps import data_load, data_splitting, modeling, evaluation, prediction
 
