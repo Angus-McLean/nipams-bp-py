@@ -28,7 +28,7 @@ services:
     # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
     # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
     # command: "jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root"
-    command: "python3 -m jupyterlab --port=8888 --no-browser --ip=0.0.0.0 --allow-root --ServerApp.token='asdf'"
+    command: "python3 -m jupyterlab --port=8888 --no-browser --ip=0.0.0.0 --allow-root --ServerApp.token='nipams'"
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
   dashapp:

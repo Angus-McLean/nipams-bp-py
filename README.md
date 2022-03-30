@@ -1,27 +1,43 @@
-nipams-data-project
+NiPAMS VCG Blood Pressure Estimation
 ==============================
+[Work In Progress]
 
-Work in progress.. Python repository for all aspects of exploratory analysis, processing, modeling and evaluation of Nipams VCG to Blood Pressure Prediction System. Available both as a series of notebooks and/or an interactive dashboard/modeling application.
+## Overview
+Repository for all aspects of Exploratory Analysis, Processing, Modeling and Evaluation of NiPAMS Vibrational Cardiography (VCG) to Blood Pressure Estimation algoriths & system. 
 
-# Simply Run The Nipams App!
-- Ensure Docker and Docker-Compose are installed and DockerEngine is running
-- Run the Command to Build and Deploy Interactive Application
+Available both as a series of notebooks and/or an interactive dashboard/modeling application.
+
+<br/>
+
+## VCG Acquisition & Prediction Overview
+
+![title](assets/Nipams_ML_Pipeline_Simplified.png)
+
+<br/>
+
+
+# Get Started !
+## Run Analysis Engine
+1. Prerequisite : Install Docker (and Docker-Compose) - https://docs.docker.com/get-docker/
+
+1. Run the Command to Build and Deploy Interactive Application
     ```
     docker-compose up
     ```
-- Visit the following link : http://localhost:8501/
+1. Access & interact with NiPAMS Analysis Engine : 
+    <!-- 1. Primary Application : http://localhost:8501/ -->
+    1. Python Notebooks - Visit the following link : http://localhost:8888?token=nipams
+    1. Python CLI - Run the following in terminal : `docker exec -it nipams-data-jupyterlab bash`
 
-# Start Coding!
-## Setting /env folder
-- Overview : 
-- What to include : 
-    1. GIT Creds (User, Token)
-    2. ngrok
+<br/>
+
+# Development Environment Setup
 
 ## Colab
-- Overview :
-    - Uses Google-provided Colab computing platform
-    - Recommend running larger jobs with paid Colab accounts for higher-memory.
+### Overview :
+Uses Google-provided Colab computing platform
+Recommend running larger jobs with paid Colab accounts for higher-memory.
+
 - Notebooks
     - Run Colab Notebooks as you would normally (from Google Drive).
 - Dash Application
@@ -31,38 +47,45 @@ Work in progress.. Python repository for all aspects of exploratory analysis, pr
         python3 src/dash/index.py
         ```
     - Visit the link
-- VSCode Editor
+- VSCode Editor (Online)
     - Open "LifeCycle" Colab Notebook & Open Terminal
     - Run the following commands to setup the ngrok tunnel and start VSCode
     ```
-    
+    cd "{PROJECT_FOLDER}" && colabcode --port 10000 && rm install.sh    
     ```
 - Git
     - Ensure the Git creds are in .env
     - Connect & Authenticate with Git
 
-## Local
+## Local Machine (Docker)
 Uses Docker and DockerCompose
-- PreReq
+- Prerequisites
     - Ensure Docker Engine is running
-    - Build!
+    - Build Docker Containers
         ```
         docker-compose build 
         ```
-    - Start!
+    - Start your Engine!
         ```
         docker-compose up 
         ```
 - Notebooks (JupyterLab)
     - Start App (PreReq above)
-    - View logs for similar URL : http://127.0.0.1:8888/lab?token=
+    - View logs for similar URL : http://127.0.0.1:8888/lab?token=nipams
 - Dash Application
     - Start App (PreReq above)
     - Visit URL : http://0.0.0.0:8501/
 
-
-Nipams Project Organization
+<br/><br/>
 ------------
+
+
+# System Architecture
+
+![title](assets/Nipams_ML_Pipeline_Full.png)
+
+<br/><br/>
+# Nipams Code Organization
 
     ├── README.md          <- The top-level README for collaborators of the nipams project.
     ├── .git               <- includes .gitignore - Everything related to changelogs and version management
@@ -112,5 +135,54 @@ Nipams Project Organization
 
 
 
---------
 
+<br/><br/>
+
+# Life Cycle Operations
+## Loading & Preprocessing
+Description : The Loading & Preprocessing script will 
+
+Arguments :
+- output_file : 
+
+<br/>
+
+## Graphing & Analysis
+Description : The Graphing & Analysis script will 
+
+Arguments :
+- output_file : 
+
+<br/>
+
+## Feature & TimeSeries Vectorization
+Description : The Feature & TimeSeries Vectorization script will 
+
+Arguments :
+- output_file : 
+
+<br/>
+
+## Dataset Splitting
+Description : The Dataset Splitting script will 
+
+Arguments :
+- output_file : 
+
+<br/>
+
+## Model Training & Prediction
+Description : The Model Training & Prediction script will 
+
+Arguments :
+- output_file : 
+
+<br/>
+
+## Evaluation
+Description : The Evaluation script takes a trained model and experiment_split to output the resulting model score.
+
+Arguments :
+- output_file : 
+
+<br/>
