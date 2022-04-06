@@ -8,6 +8,24 @@ from sklearn.model_selection import KFold, ShuffleSplit, TimeSeriesSplit, GroupK
 
 # import matplotlib.pyplot as plt
 
+DEFAULTS = {
+    "split_by_random" : """{"function":"split_by_random","kwargs": {
+        "indices" : ["file", "heartbeat"], 
+        "split_kwargs" : {"n_splits":4, "test_size":0.2, "random_state":0}
+    }}""",
+    "split_by_group" : """{"function":"split_by_group","kwargs": {
+        "group_col" : "patient",
+        "indices" : ["file", "heartbeat"], 
+        "split_kwargs" : {"n_splits":4}
+    }}""",
+    "split_by_query" : """{"function":"split_by_query","kwargs": {
+        "trainQ" : "heartbeat <= 20",
+        "testQ" : "heartbeat > 20", 
+        "indices" : ["file", "heartbeat"], 
+        "split_kwargs" : {"n_splits":4, "random_state":0}
+    }}"""
+}
+
 ## All split_by_* functions return [{'train':<indices for train set>, 'test':<indices for test set>},...]
 
 ## Randomly assign samples to train & test set

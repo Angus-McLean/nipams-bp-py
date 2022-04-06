@@ -70,6 +70,7 @@ def calculate_BP_from_VCG(df_vcg, params={'k1':1.,'k2':1.}, pluginFns={}):
   dXp_z, vXp_z = displacement(df_vcg['az'])
   # dXp_Norm = np.linalg.norm(np.array([dXp,dXp_y,dXp_z]), axis=0)
   dXp_Norm = np.linalg.norm(np.array([np.nan_to_num(dXp,1.),np.nan_to_num(dXp_z,1.)]), axis=0)
+  # dXp_Norm = np.array([np.nan_to_num(dXp,1.)])
   
   # dAar, vAar = displacement(vcg_aar)
   # deltaDisp = dXp - dAar
@@ -129,8 +130,8 @@ class AnalyticalBPEstimatorFixed(BaseEstimator):
     return np.array(y_preds).clip(40,180)
   
   def score(self, rows, y):
-    # return 1
-    return np.abs((self.predict(rows))-y).fillna(0).mean()
+    return 1
+    # return np.abs((self.predict(rows))-y).fillna(0).mean()
 
 
 from sklearn.model_selection import GridSearchCV

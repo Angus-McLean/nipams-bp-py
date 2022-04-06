@@ -27,7 +27,8 @@ Available both as a series of notebooks and/or an interactive dashboard/modeling
 1. Access & interact with NiPAMS Analysis Engine : 
     <!-- 1. Primary Application : http://localhost:8501/ -->
     1. Python Notebooks - Visit the following link : http://localhost:8888?token=nipams
-    1. Python CLI - Run the following in terminal : `docker exec -it nipams-data-jupyterlab bash`
+    1. Python CLI - Run the following in terminal : `docker exec -it nipams-data-jupyterlab python`
+    1. Bash (Root) - Run the following in terminal : `docker exec -it nipams-data-jupyterlab bash`
 
 <br/>
 
@@ -58,7 +59,7 @@ Recommend running larger jobs with paid Colab accounts for higher-memory.
     - Connect & Authenticate with Git
 
 ## Local Machine (Docker)
-Uses Docker and DockerCompose
+Uses Docker and DockerCompose to build disk images and run containers within Docker Engine
 - Prerequisites
     - Ensure Docker Engine is running
     - Build Docker Containers
@@ -139,50 +140,87 @@ Uses Docker and DockerCompose
 <br/><br/>
 
 # Life Cycle Operations
-## Loading & Preprocessing
-Description : The Loading & Preprocessing script will 
 
-Arguments :
-- output_file : 
+docker exec -it nipams-data-jupyterlab bash
+
+docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py -h
+docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py --input.folder=./data
+
+
+
+## Loading & Preprocessing
+__Description__ : The Loading & Preprocessing script will 
+
+__Script File__ : 1_load_data.py
+
+__Arguments__ :
+- download.source
+- download.out_folder
+- input.folder
+- input.pattern
+- input.limit_files
+- preprocess.type
+- output.file_path
 
 <br/>
 
 ## Graphing & Analysis
-Description : The Graphing & Analysis script will 
+__Description__ : The Graphing & Analysis script will 
 
-Arguments :
-- output_file : 
+__Script File__ : 2_draw_chart.py
+
+__Arguments__ :
+- input.data_path
+- input.folder
+- chart.type
+- chart.configuration
+- output.chart_path
 
 <br/>
 
 ## Feature & TimeSeries Vectorization
-Description : The Feature & TimeSeries Vectorization script will 
+__Description__ : The Feature & TimeSeries Vectorization script will 
 
-Arguments :
-- output_file : 
+__Script File__ : 3_build_features.py
 
-<br/>
-
-## Dataset Splitting
-Description : The Dataset Splitting script will 
-
-Arguments :
-- output_file : 
+__Arguments__ :
+- input.data_path
+- feature.type
+- feature.configuration
+- output.file_path
 
 <br/>
 
 ## Model Training & Prediction
-Description : The Model Training & Prediction script will 
+__Description__ : The Model Training & Prediction script will 
 
-Arguments :
-- output_file : 
+__Script File__ : 4_train_model.py
+
+__Arguments__ :
+- input.data_path
+- input.folder
+- experiment.type
+- experiment.configuration
+- model.type
+- model.configuration
+- model.pipeline
+- output.model_path
+- output.results_path
 
 <br/>
 
 ## Evaluation
-Description : The Evaluation script takes a trained model and experiment_split to output the resulting model score.
+__Description__ : The Evaluation script takes a trained model and experiment_split to output the resulting model __score.__
+
+__Script__ File : 5_predict_and_evaluate.py
 
 Arguments :
-- output_file : 
+- input.data_path
+- input.folder
+- input.model_path
+- experiment.type
+- experiment.configuration
+- output.model_path
+- output.results_path
 
 <br/>

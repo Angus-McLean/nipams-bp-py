@@ -1,8 +1,6 @@
 
 #@title Fetch and Parse Data
-from typing import OrderedDict
 from utils.constants import *
-import tempfile
 from scipy.io import loadmat
 
 FILE_PATTERN_MAT = r'.*\.mat$'
