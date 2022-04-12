@@ -73,7 +73,8 @@ def split_by_query(trainQ=None, testQ=None, dfBp=None, indices=['file', 'heartbe
 
 def random_split_indices(dfInds=None, split_kwargs={}):
   # print('random_split_indices')
-  sss = ShuffleSplit(**split_kwargs)
+  # sss = ShuffleSplit(**split_kwargs)
+  sss = KFold(**{**{'shuffle':True}, **split_kwargs,})
 
   arrFoldInds = []
   for train_index, test_index in sss.split(dfInds):
@@ -100,7 +101,7 @@ def get_experiment_df(df, dfInds):
   return pd.merge(dfInds, df.reset_index(), on=dfInds.columns.to_list(), how='left')
 
 
-def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS, targetCol='pp', n_splits=5, test_size=0.2, shuffle=True, testResults=None):
+def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS, targetCol='sbp', n_splits=5, test_size=0.2, shuffle=True, testResults=None):
     if testResults == None:
       testResults = []
     for experimentIndices in indices:
@@ -108,11 +109,13 @@ def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS
 
       pipeline.fit(
         objExperimentDfs['train_x'].drop(dropCols, errors='ignore'),
-        objExperimentDfs['train_y'].groupby(INDICIES)[targetCol].mean()
+        objExperimentDfs['train_y'].groupby(INDICIES, sort=False)[targetCol].mean()
+        # objExperimentDfs['train_y']
       )
       preds = pipeline.predict(objExperimentDfs['test_x'])
 
-      y_test = objExperimentDfs['test_y'].groupby(INDICIES)[targetCol].mean()
+      y_test = objExperimentDfs['test_y'].groupby(INDICIES, sort=False)[targetCol].mean()
+      # y_test = objExperimentDfs['test_y']
       resultsObj = {
           'mean_absolute_error': mean_absolute_error(preds, y_test),
           'r2_score':r2_score(preds, y_test),

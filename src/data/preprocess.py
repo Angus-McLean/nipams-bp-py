@@ -97,8 +97,8 @@ def filterSplit(dfBpCont, dfImuCont,fs=200):
       # dfImuFreqFiltLp = interpBeats(dfImuFiltLp)
       # dfImuFreqFiltHp = interpBeats(dfImuFiltHp)
       # Append BP, imu raw, imu filt
-    dfBpAll = dfBpAll.append(BpTargets)
-    dfImuRawAll = dfImuRawAll.append(dfImuSamp)
+    dfBpAll = pd.concat([dfBpAll , BpTargets])
+    dfImuRawAll = pd.concat([dfImuRawAll , dfImuSamp])
       # dfImuFiltLpAll = dfImuFiltLpAll.append(dfImuFreqFiltLp)
       # dfImuFiltHpAll = dfImuFiltHpAll.append(dfImuFreqFiltHp)
     # except:
