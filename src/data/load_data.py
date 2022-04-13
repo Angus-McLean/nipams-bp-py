@@ -8,7 +8,7 @@ FILE_PATTERN_PICKLE = r'.*\.pickle$'
 
 #### LOCAL DATA FILES #####
 def fetch_data_from_local(folder='.',
-      pattern='({FILE_PATTERN_MAT}|{FILE_PATTERN_PICKLE})',
+      pattern=f'({FILE_PATTERN_MAT}|{FILE_PATTERN_PICKLE})',
       limit_files=10):
   # onlyfiles = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
   # matchedFiles = [file for file in onlyfiles if re.search(pattern, file)][:limit_files]
@@ -16,9 +16,9 @@ def fetch_data_from_local(folder='.',
   dfFiles = pd.DataFrame(list(os.walk(folder)), columns=['path','folders','files'])
   dfFiles = dfFiles.set_index('path').files.explode().reset_index()
   dfFiles['filenames'] = dfFiles.reset_index()['path'] + '/' + dfFiles.files
-  matchedFiles = dfFiles.filenames[dfFiles.filenames.str.contains(pattern)]
+  matchedFiles = dfFiles.filenames[dfFiles.filenames.str.contains(pat=pattern)]
   
-  return matchedFiles
+  return matchedFiles[:limit_files]
 
 
 #### GOOGLE DRIVE ####
@@ -69,7 +69,10 @@ def read_mat_files(filenames, continuous=True):
   arrDfsImu, arrDfsBp = [], []
   for filename in arrFilenameSubset:
     # filename = 'data/raw_mat/'+blob.name.split('/')[-1]
-    imuFile = loadmat(filename)
+    try:
+      imuFile = loadmat(filename)
+    except : 
+      print('ERROR loading mat file', filename)
 
     if continuous:
       dfImu, dfBp = getContinuousDataFromMatlab(imuFile)

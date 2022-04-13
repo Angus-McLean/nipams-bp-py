@@ -29,7 +29,7 @@ DEFAULTS = {
 ## All split_by_* functions return [{'train':<indices for train set>, 'test':<indices for test set>},...]
 
 ## Randomly assign samples to train & test set
-def split_by_random(dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'test_size':0.2, 'random_state':0}):
+def split_by_random(dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'random_state':0}):
   # print('random_split')
   dfAllInds = dfBp.reset_index()[indices].drop_duplicates()
   arrFoldInds = random_split_indices(dfAllInds, split_kwargs)
@@ -108,7 +108,7 @@ def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS
       objExperimentDfs = get_experiment(experimentIndices, dfImu, dfBp)
 
       pipeline.fit(
-        objExperimentDfs['train_x'].drop(dropCols, errors='ignore'),
+        objExperimentDfs['train_x'].drop(dropCols, errors='ignore')[IMU_DATA_COLS + INDICIES + ['ts']],
         objExperimentDfs['train_y'].groupby(INDICIES, sort=False)[targetCol].mean()
         # objExperimentDfs['train_y']
       )

@@ -7,10 +7,12 @@ import warnings
 
 #@title Implement Filter Split
 def get_cycles(dfBp,dfImu,t_cc=0.1):
+  dfBp = dfBp.copy()
+  dfImu = dfImu.copy()
   ind_cc_bp = []
   ind_cc_imu = []
 
-  dfBp['Rpk'] = dfBp.ecgTs.round()==4
+  dfBp['Rpk'] = dfBp['ecgTs'].round()==4
   tccs = dfBp.query('Rpk').index-timedelta(seconds=t_cc)
   dfBp['tsCC'] = False
   dfImu['tsCC'] = False
@@ -18,8 +20,11 @@ def get_cycles(dfBp,dfImu,t_cc=0.1):
     ind_cc_bp.append(dfBp.index.get_loc(tcc_now, method='nearest'))
     ind_cc_imu.append(dfImu.index.get_loc(tcc_now, method='nearest'))
 
-  dfBp['tsCC'].iloc[ind_cc_bp] = True
-  dfImu['tsCC'].iloc[ind_cc_imu] =True
+  # dfBp['tsCC'].iloc[ind_cc_bp] = True
+  # dfImu['tsCC'].iloc[ind_cc_imu] = True
+  dfBp.iloc[ind_cc_bp, dfBp.columns.get_loc('tsCC')] = True
+  dfImu.iloc[ind_cc_imu, dfImu.columns.get_loc('tsCC')] = True
+
 
   dfBp['heartbeat'] = dfBp['tsCC'].cumsum()
   dfImu['heartbeat'] = dfImu['tsCC'].cumsum()
@@ -85,24 +90,24 @@ def filterSplit(dfBpCont, dfImuCont,fs=200):
     # dfImuFiltHp = dfImuFiltHp[~dfImuFiltHp['heartbeat'].isin(del_hb)]
     # todo: Re-number HBs to 0:len?
     # Make BP Targets (single value)
-    # try:
-    BpTargets = dfBpSamp.groupby('heartbeat').apply(lambda x: x[BP_COLS].mean())
-    BpTargets['file'] = dfBpSamp.file[0]
-    BpTargets['test_type'] = dfBpSamp.test_type[0]
-    BpTargets['test_num'] = dfBpSamp.test_num[0]
-    BpTargets['patient'] = dfBpSamp.patient[0]
-      # Make IMU raw feats (500 values)
-      # dfImuRaw = interpBeats(dfImuSamp)
-      # Make IMU filt feats(500 values)
-      # dfImuFreqFiltLp = interpBeats(dfImuFiltLp)
-      # dfImuFreqFiltHp = interpBeats(dfImuFiltHp)
-      # Append BP, imu raw, imu filt
-    dfBpAll = pd.concat([dfBpAll , BpTargets])
-    dfImuRawAll = pd.concat([dfImuRawAll , dfImuSamp])
+    try:
+      BpTargets = dfBpSamp.groupby('heartbeat').apply(lambda x: x[BP_COLS].mean())
+      BpTargets['file'] = dfBpSamp.reset_index().file[0]
+      BpTargets['test_type'] = dfBpSamp.test_type[0]
+      BpTargets['test_num'] = dfBpSamp.test_num[0]
+      BpTargets['patient'] = dfBpSamp.patient[0]
+        # Make IMU raw feats (500 values)
+        # dfImuRaw = interpBeats(dfImuSamp)
+        # Make IMU filt feats(500 values)
+        # dfImuFreqFiltLp = interpBeats(dfImuFiltLp)
+        # dfImuFreqFiltHp = interpBeats(dfImuFiltHp)
+        # Append BP, imu raw, imu filt
+      dfBpAll = pd.concat([dfBpAll , BpTargets])
+      dfImuRawAll = pd.concat([dfImuRawAll , dfImuSamp])
       # dfImuFiltLpAll = dfImuFiltLpAll.append(dfImuFreqFiltLp)
       # dfImuFiltHpAll = dfImuFiltHpAll.append(dfImuFreqFiltHp)
-    # except:
-    #   print("Error with file", print(dfBpSamp.file[0]))
+    except Exception as e:
+      print("Error with file", print(name), str(e))
     
   return dfBpAll, dfImuRawAll#, dfImuFiltLpAll#, dfImuFiltHpAll
 
@@ -119,6 +124,20 @@ def merge_imu_vcg_with_heartbeats(dfBpAll, dfImuAll):
   dfAll = dfAll.drop(dfAll.columns[dfAll.columns.str.contains('_drop')], axis=1)
 
   return dfAll
+
+
+def interpolateDatasets(dfImu, dfBp, freq='5ms', groupbyCol='file', method='linear'):
+  dfBpSamp = dfBp.groupby(groupbyCol).apply(lambda x:x.resample(freq).interpolate(method=method))#.reset_index(groupbyCol, drop=True)
+  dfImuSamp = dfImu.groupby(groupbyCol).apply(lambda x:x.resample(freq).interpolate(method=method))#.reset_index(groupbyCol, drop=True)#.drop('file', axis=1).reset_index()
+  
+  # interpolation doesn't work from strings.. fill in the NaNs
+  serBpNonNumCols = dfBpSamp.columns[~dfBpSamp.columns.isin(BP_COLS)]
+  dfBpSamp[serBpNonNumCols] = dfBpSamp[serBpNonNumCols].fillna(method='ffill')
+  serImuNonNumCols = dfImuSamp.columns[~dfImuSamp.columns.isin(IMU_DATA_COLS)]
+  dfImuSamp[serImuNonNumCols] = dfImuSamp[serImuNonNumCols].fillna(method='ffill')
+
+  return dfImuSamp, dfBpSamp
+
 
 
 #@title Preprocessors - Enforce 3d shape
@@ -160,7 +179,7 @@ def explode_3d_old(input_series, indicies=INDICIES, data_cols=IMU_DATA_COLS, nst
   # dfTsVect = input_series[indicies + data_cols].groupby(indicies, sort=False).fillna(0)
   arrTsExp = np.array(list(
       input_series\
-        .groupby(indicies)\
+        .groupby(indicies, sort=False)\
         .apply(lambda x : forceShape(x[['ts']+data_cols].values, nsteps).T)
       )
   )
