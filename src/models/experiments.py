@@ -29,7 +29,7 @@ DEFAULTS = {
 ## All split_by_* functions return [{'train':<indices for train set>, 'test':<indices for test set>},...]
 
 ## Randomly assign samples to train & test set
-def split_by_random(dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'test_size':0.2, 'random_state':0}):
+def split_by_random(dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4, 'random_state':0}):
   # print('random_split')
   dfAllInds = dfBp.reset_index()[indices].drop_duplicates()
   arrFoldInds = random_split_indices(dfAllInds, split_kwargs)

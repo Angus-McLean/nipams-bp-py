@@ -31,22 +31,3 @@ services:
     command: "python3 -m jupyterlab --port=8888 --no-browser --ip=0.0.0.0 --allow-root --ServerApp.token='nipams'"
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
-  dashapp:
-    container_name: nipams-data-dashapp
-    image: data-app
-    env_file:
-      - .env/local.yml
-      - .env/default.yml
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    volumes:
-      - /Users/amclean/workspace/nipams-data-project/:/app
-    ports:
-      - "8500:8500"
-      # - "8888:8888"
-      - "5678:5678"
-    # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
-    # command: "~/.local/bin/jupyter-notebook --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
-    # command: "jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root"
-    command: "python3 src/dash_app/index.py"
