@@ -16,7 +16,7 @@ def fetch_data_from_local(folder='.',
   dfFiles = pd.DataFrame(list(os.walk(folder)), columns=['path','folders','files'])
   dfFiles = dfFiles.set_index('path').files.explode().reset_index()
   dfFiles['filenames'] = dfFiles.reset_index()['path'] + '/' + dfFiles.files
-  matchedFiles = dfFiles.filenames[dfFiles.filenames.str.contains(pat=pattern)]
+  matchedFiles = dfFiles.filenames[dfFiles.filenames.str.contains(pat=pattern)][:limit_files]
   
   return matchedFiles[:limit_files]
 
