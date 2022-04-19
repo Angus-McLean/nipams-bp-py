@@ -9,6 +9,7 @@ google-cloud-storage
 
 ### ML ###
 sklearn
+tsfel
 
 ### Viz ###
 matplotlib

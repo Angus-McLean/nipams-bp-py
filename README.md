@@ -34,7 +34,7 @@ Available both as a series of notebooks and/or an interactive dashboard/modeling
 
 # Development Environment Setup
 
-## Colab
+## Colab (Cloud)
 ### Overview :
 Uses Google-provided Colab computing platform
 Recommend running larger jobs with paid Colab accounts for higher-memory.
@@ -124,7 +124,6 @@ Uses Docker and DockerCompose to build disk images and run containers within Doc
     │   │   └── build_features.py
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make predictions
-    │   │   ├── predict_model.py
     │   │   └── train_model.py
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
