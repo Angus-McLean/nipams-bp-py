@@ -143,6 +143,7 @@ Uses Docker and DockerCompose to build disk images and run containers within Doc
 docker exec -it nipams-data-jupyterlab bash
 
 docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py -h
+
 docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py --input.folder=./data
 
 

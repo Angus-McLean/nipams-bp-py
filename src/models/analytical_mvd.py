@@ -110,11 +110,6 @@ class AnalyticalBPEstimatorFixed(BaseEstimator):
     self.target = target
 
   def fit(self, X, y):
-    ## GridSearch Params
-    
-    # self.X_ = X
-    # self.y_ = y
-    # Return the classifier
     return self
 
   def predict(self, X):
@@ -138,6 +133,16 @@ from sklearn.model_selection import GridSearchCV
 
 class AnalyticalBPEstimator(AnalyticalBPEstimatorFixed):
   def __init__(self, target='sbp', k1_range=(1e4,1e7), k2_range=(45,160), nsteps=5, k1=0., k2=0.):
+    """This estimator wraps the AnalyticalBPEstimatorFixed and uses a GridSearchCV
+    to iterate over the k1 and k2 ranges and fit the AnalyticalBPEstimatorFixed in order to tune
+    the k1 and k2 parameters that perform best on the training set.
+
+    Args:
+        target (str, optional): The type of blood pressure being predicted. Defaults to 'sbp'.
+        k1_range (tuple, optional): Min and Max values for k1 parameter. Defaults to (1e4,1e7).
+        k2_range (tuple, optional): Min and Max values for k2 parameter. Defaults to (45,160).
+        nsteps (int, optional): The number of steps to take when fitting parameters. Defaults to 5.
+    """    
     self.k1_range = k1_range
     self.k1 = k1_range[0]
     self.k2_range = k2_range
@@ -146,7 +151,17 @@ class AnalyticalBPEstimator(AnalyticalBPEstimatorFixed):
     self.nsteps = nsteps
   
   def fit(self, X, y):
-    ## GridSearch Params
+    """Iterate over the k1 and k2 ranges provided in the Estimator constructor and fit the AnalyticalBPEstimatorFixed 
+    in order to tune the k1 and k2 parameters that perform best on the training set. Once the optimal parameters are
+    identified they are saved to the model parameters to be used during prediction steps of the AnalyticalBPEstimatorFixed.
+
+    Args:
+        X (_type_): 3d input data for panel dataset
+        y (_type_): 2d target blood pressure
+
+    Returns:
+        _type_: <AnalyticalBPEstimatorFixed> self
+    """   
     
     reg = GridSearchCV(AnalyticalBPEstimatorFixed(target=self.target), {
         'k1':np.arange(self.k1_range[0], self.k1_range[1],(self.k1_range[1]-self.k1_range[0])/self.nsteps),

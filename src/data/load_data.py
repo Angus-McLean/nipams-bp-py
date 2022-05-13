@@ -39,7 +39,6 @@ def fetch_data_from_gdrive(folder, pattern='*.mat$', limit_files=10):
 
 #### GOOGLE CLOUD ####
 def connect_gcs():
-  global GLOBAL
   from google.cloud import storage
 
   client = storage.Client()
