@@ -54,15 +54,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Input dataset and model configurations, train model and save trained model weights!')
 
-    parser.add_argument("--input.folder", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--input.data_path", default='unnamed.processed-data.pickle', type=str, help="This is the folder in which to search")
-    parser.add_argument("--experiment.split_type", default='split_by_group', type=str, help="This is the folder in which to search")
-    parser.add_argument("--experiment.configuration", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--model.type", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--model.configuration", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--model.pipeline", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--output.model_path", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--output.file_path", default=f'{os.environ["PROJECT_PATH"]}/reports/figures/unnamed.splits.html', type=str, help="Output Chart file path")
+    parser.add_argument("--input.folder", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This parameter points to the specific folder in which to search")
+    parser.add_argument("--input.data_path", default='unnamed.processed-data.pickle', type=str, help="Points to the specific file to load within the input folder")
+    parser.add_argument("--experiment.split_type", default='split_by_group', type=str, help="Indicates which strategy to use when generating splits")
+    parser.add_argument("--experiment.configuration", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="Additional configurations for train & test splitting configuration")
+    parser.add_argument("--model.type", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="Overarching model type - analytical, machine learning, deep learning")
+    parser.add_argument("--model.configuration", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="Additional details for model configuration")
+    parser.add_argument("--model.pipeline", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="The most flexible approach to pipeline creation for modeling")
+    parser.add_argument("--output.model_path", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="The destination folder path in which to save the model snapshot")
+    parser.add_argument("--output.file_path", default=f'{os.environ["PROJECT_PATH"]}/reports/figures/unnamed.splits.html', type=str, help="The output resulting predictions file path to save the results")
 
     args = parser.parse_args()
 

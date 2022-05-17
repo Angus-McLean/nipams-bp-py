@@ -26,13 +26,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='A tutorial of argparse!')
 
-    parser.add_argument("--download.source", default='local', type=str, help="This is the folder in which to search")
-    parser.add_argument("--download.out_folder", default=f'{os.environ["PROJECT_PATH"]}/data/raw', type=str, help="This is the folder in which to search")
-    parser.add_argument("--input.folder", default=f'{os.environ["PROJECT_PATH"]}/data/raw', type=str, help="This is the folder in which to search")
+    parser.add_argument("--download.source", default='local', type=str, help="This is the remote folder in which to search")
+    parser.add_argument("--download.out_folder", default=f'{os.environ["PROJECT_PATH"]}/data/raw', type=str, help="The local folder in which to download files")
+    parser.add_argument("--input.folder", default=f'{os.environ["PROJECT_PATH"]}/data/raw', type=str, help="If download folder is not provided assumes loading from local folder")
     parser.add_argument("--input.pattern", default=load_data.FILE_PATTERN_MAT, type=str, help="This is the file regex pattern to use when searching for files")
     parser.add_argument("--input.limit_files", default=10, type=int, help="This is the limit_files variable")
-    parser.add_argument("--preprocess.type", default='merge_imu_vcg_with_heartbeats', type=str, help="This is the preprocess type variable")
-    parser.add_argument("--output.file_type", default='pickle', type=str, help="Output file type")
+    parser.add_argument("--preprocess.type", default='merge_imu_vcg_with_heartbeats', type=str, help="This is the preprocess type input parameter")
     parser.add_argument("--output.file_path", default=f'{os.environ["PROJECT_PATH"]}/data/unnamed.processed-data.pickle', type=str, help="Output file path")
 
     args = parser.parse_args()
