@@ -2,21 +2,56 @@ NiPAMS VCG Blood Pressure Estimation
 ==============================
 [Work In Progress]
 
-## Overview
-Repository for all aspects of Exploratory Analysis, Processing, Modeling and Evaluation of NiPAMS Vibrational Cardiography (VCG) to Blood Pressure Estimation algoriths & system. 
+# Introduction
+## Research Objective
+Systematically Explore and Compare different Computational Approaches to Estimate Blood Pressure from a Vibrational Cardiography.
 
-Available both as a series of notebooks and/or an interactive dashboard/modeling application.
+## Important Considerations
+> __Purpose__ : 
+Observations & results from the questions below help understand the limitations of such a system and guide future development & deployments.
+
+- What level of accuracy is required?
+- Measuring Systolic or Diastolic blood pressures?
+- How quickly does the system need to produce readings?
+    - Every Heartbeat? 3s? 60s?
+- Can we calibrate the system to an individual patient or should it be general?
+    - How long does the calibration window need to be?
+- Different Exercises - Deep Breathing, Breath Holds, etc
+- What type of "model" to use?
+    - Continuum of approaches - Analytical to Statistical
+
+
+<!-- ## Data Overview -->
+## Input VCG signals
+![title](assets/timeline_input_vcg.png)
+
+## Target Blood Pressures
+![title](assets/timeline_target_bp.png)
+
+## Continuum of Approaches & Results
+<img src="assets/continuum_of_approaches.png" alt="preds_vs_actuals" width="1000"/>
+<!-- <img src="assets/deep_learning_preds_actuals.png" alt="preds_vs_actuals" width="300"/> -->
+
 
 <br/>
 
+
+
+
+# Get Started !
+## Package Overview
+Repository for all aspects of Exploratory Analysis, Processing, Modeling and Evaluation of NiPAMS Vibrational Cardiography (VCG) to Blood Pressure Estimation algoriths & system. 
+
+Available both as a series of notebooks and an interactive dashboard/modeling application.
+
+
 ## VCG Acquisition & Prediction Overview
+
 
 ![title](assets/Nipams_ML_Pipeline_Simplified.png)
 
 <br/>
 
-
-# Get Started !
 ## Run Analysis Engine
 1. Prerequisite : Install Docker (and Docker-Compose) - https://docs.docker.com/get-docker/
 
@@ -34,7 +69,23 @@ Available both as a series of notebooks and/or an interactive dashboard/modeling
 
 # Development Environment Setup
 
-## Colab
+## Local Machine (Docker)
+Uses Docker and DockerCompose to build disk images and run containers within Docker Engine
+- Prerequisites
+    - Ensure Docker Engine is running
+    - Build Docker Containers
+        ```
+        docker-compose build 
+        ```
+    - Start your Engine!
+        ```
+        docker-compose up 
+        ```
+- Notebooks (JupyterLab)
+    - Start App (PreReq above)
+    - View logs for similar URL : http://127.0.0.1:8888/lab?token=nipams
+
+## Colab (Cloud)
 ### Overview :
 Uses Google-provided Colab computing platform
 Recommend running larger jobs with paid Colab accounts for higher-memory.
@@ -58,25 +109,6 @@ Recommend running larger jobs with paid Colab accounts for higher-memory.
     - Ensure the Git creds are in .env
     - Connect & Authenticate with Git
 
-## Local Machine (Docker)
-Uses Docker and DockerCompose to build disk images and run containers within Docker Engine
-- Prerequisites
-    - Ensure Docker Engine is running
-    - Build Docker Containers
-        ```
-        docker-compose build 
-        ```
-    - Start your Engine!
-        ```
-        docker-compose up 
-        ```
-- Notebooks (JupyterLab)
-    - Start App (PreReq above)
-    - View logs for similar URL : http://127.0.0.1:8888/lab?token=nipams
-- Dash Application
-    - Start App (PreReq above)
-    - Visit URL : http://0.0.0.0:8501/
-
 <br/><br/>
 ------------
 
@@ -91,19 +123,16 @@ Uses Docker and DockerCompose to build disk images and run containers within Doc
     ├── README.md          <- The top-level README for collaborators of the nipams project.
     ├── .git               <- includes .gitignore - Everything related to changelogs and version management
     ├── data
+    │   ├── raw        <- Intermediate data that has been transformed (matlab files & python dataframes)
     │   ├── interim        <- Intermediate data that has been transformed (matlab files & python dataframes)
     │   ├── processed      <- The final, canonical data sets for modeling (includes interpolation).
-    │   └── raw            <- Raw VCG Data from patient trials (sourced from gDrive).
-    │
-    ├── docs               <- Folder for sensor collection details and data dictionaries (structures, indexes, etc)
+    │   └── raw_mat            <- Raw VCG Data from patient trials (sourced from gDrive).
     │
     ├── models             <- Trained and serialized models and model summaries
     │
     ├── notebooks          <- Colab/Jupyter notebooks. Naming convention `<date>-<initials>-<notebook title>`.
     │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials. (includes lifecycle operations)
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+    ├── reports            <- Generated analysis as HTML, PDF, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
     │
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
@@ -115,23 +144,28 @@ Uses Docker and DockerCompose to build disk images and run containers within Doc
     │   │
     │   ├── utils          <- Scripts for platform agnostic helpers and environments
     │   │
-    │   ├── dash           <- Scripts to create interactive dashboard application
-    │   │
     │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   │   ├── load_data.py
+    │   │   └── preprocess.py
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
+    │   │   ├── simple.py
+    │   │   └── tsfel_vectorizer.py
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
+    │   │   ├── analytical_mvd.py
+    │   │   ├── baselines.py
+    │   │   ├── experiments.py
+    │   │   ├── nn_tsai.py
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
     │
-    ├── .env.yml           <- Environment variables and configurations for build and runtime
-    ├── docker-compose.yml <- Configuration for Docker Compose for defining and running multi-container Docker applications
+    ├── env            <- Environment variables and configurations for build and runtime
+    │   ├── local.yml 
+    │   ├── colab.yml 
+    │   └── default.yml 
+    ├── docker-compose.yml <- Configuration for Docker Compose for defining and running multi-container 
     └── Dockerfile         <- Dockerfile contains all the commands a user could call on the command line to assemble an image
 
 
@@ -140,87 +174,137 @@ Uses Docker and DockerCompose to build disk images and run containers within Doc
 <br/><br/>
 
 # Life Cycle Operations
+Getting Started : 
+1. Connect to bash
+    ```
+    docker exec -it nipams-data-jupyterlab bash
+    ```
+1. Display Help Information
+    ```
+    docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py -h
+    ```
+1. Execute LifeCycle Script
+    ```
+    docker exec -it nipams-data-jupyterlab \
+        python src/scripts/load_data.py \
+        --input.folder=./data
+        --output.folder=./data
+    ```
 
-docker exec -it nipams-data-jupyterlab bash
-
-docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py -h
-docker exec -it nipams-data-jupyterlab python src/scripts/load_data.py --input.folder=./data
 
 
-
-## Loading & Preprocessing
+## 1 - Loading & Preprocessing
 __Description__ : The Loading & Preprocessing script will 
 
 __Script File__ : 1_load_data.py
 
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab
+    python src/scripts/1_load_data.py
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
+
 __Arguments__ :
-- download.source
-- download.out_folder
-- input.folder
-- input.pattern
-- input.limit_files
-- preprocess.type
-- output.file_path
+- **download.source** : This is the remote folder in which to search
+- **download.out_folder** : The local folder in which to download files
+- **input.folder** : If download folder is not provided assumes loading from local folder
+- **input.pattern** : This is the file regex pattern to use when searching for files
+- **input.limit_files** : This is the limit_files variable
+- **preprocess.type** : This is the preprocess type input parameter
+- **output.file_path** : Output file path
 
 <br/>
 
-## Graphing & Analysis
+## 2 - Graphing & Analysis
 __Description__ : The Graphing & Analysis script will 
 
 __Script File__ : 2_draw_chart.py
 
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab
+    python src/scripts/2_draw_chart.py
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
+
 __Arguments__ :
-- input.data_path
-- input.folder
-- chart.type
-- chart.configuration
-- output.chart_path
+- **input.folder** : This is the folder in which to search
+- **input.data_path** : Points to the specific file to load within the input folder
+- **chart.type** : This is the chart type parameter, defaults to timeline
+- **chart.configuration** : This is the additional chart configurations in JSON form
+- **output.file_path** : Output Chart file path
 
 <br/>
 
-## Feature & TimeSeries Vectorization
+## 3 - Feature & TimeSeries Vectorization
 __Description__ : The Feature & TimeSeries Vectorization script will 
 
 __Script File__ : 3_build_features.py
 
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab \
+    python src/scripts/3_build_features.py \
+                --input.file_path=./data/interim/df_HLV.pickle
+                --output.folder=./data/vectors
+```
+
 __Arguments__ :
-- input.data_path
-- feature.type
-- feature.configuration
-- output.file_path
+- **input.file_path** : This parameter points to the specific preprocessed dataset file
+- **feature.type** : Overarching type of featurizing being calculated
+- **feature.configuration** : Generic feature generation configuration JSON
+- **output.file_path** : Output file path
 
 <br/>
 
-## Model Training & Prediction
+## 4 - Model Training & Prediction
 __Description__ : The Model Training & Prediction script will 
 
 __Script File__ : 4_train_model.py
 
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab
+    python src/scripts/4_train_model.py
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
+
 __Arguments__ :
-- input.data_path
-- input.folder
-- experiment.type
-- experiment.configuration
-- model.type
-- model.configuration
-- model.pipeline
-- output.model_path
-- output.results_path
+- **input.folder** : This parameter points to the specific folder in which to search
+- **input.data_path** : Points to the specific file to load within the input folder
+- **experiment.split_type** : Indicates which strategy to use when generating splits
+- **experiment.configuration** : Additional configurations for train & test splitting configuration
+- **model.type** : Overarching model type - analytical, machine learning, deep learning
+- **model.configuration** : Additional details for model configuration
+- **model.pipeline** : The most flexible approach to pipeline creation for modeling
+- **output.model_path** : The destination folder path in which to save the model snapshot
+- **output.file_path** : The output resulting predictions file path to save the results
 
 <br/>
 
-## Evaluation
+## 5 - Evaluation
 __Description__ : The Evaluation script takes a trained model and experiment_split to output the resulting model __score.__
 
 __Script__ File : 5_predict_and_evaluate.py
 
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab \
+    python src/scripts/5_predict_and_evaluate.py \
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
+
 Arguments :
-- input.data_path
-- input.folder
-- input.model_path
-- experiment.type
-- experiment.configuration
-- output.model_path
-- output.results_path
+- **input.folder** : This parameter points to the specific folder in which to search
+- **input.data_path** : Points to the specific file to load within the input folder
+- **input.model_path** : The source folder path in which to load the model snapshot
+- **experiment.split_type** : Indicates which strategy to use when generating splits
+- **experiment.configuration** : Additional configurations for train & test splitting configuration
+- **output.file_path** : The output resulting predictions file path to save the results
 
 <br/>

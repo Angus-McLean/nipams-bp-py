@@ -29,12 +29,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Input time series dataset and export html file with time series overview!')
 
     parser.add_argument("--input.folder", default=f'{os.environ["PROJECT_PATH"]}/data/', type=str, help="This is the folder in which to search")
-    parser.add_argument("--input.data_path", default='unnamed.processed-data.pickle', type=str, help="This is the folder in which to search")
-    parser.add_argument("--chart.type", default='timeline', type=str, help="This is the preprocess type variable")
+    parser.add_argument("--input.data_path", default='unnamed.processed-data.pickle', type=str, help="Points to the specific file to load within the input folder")
+    parser.add_argument("--chart.type", default='timeline', type=str, help="This is the chart type parameter, defaults to timeline")
     parser.add_argument("--chart.configuration", default="""{"kwargs": {
         "indices" : ["file", "heartbeat"], 
         "split_kwargs" : {"n_splits":4, "test_size":0.2, "random_state":0}
-    }}""", type=str, help="This is the preprocess type variable")
+    }}""", type=str, help="This is the additional chart configurations in JSON form")
     parser.add_argument("--output.file_path", default=f'{os.environ["PROJECT_PATH"]}/reports/figures/unnamed.timeseries.html', type=str, help="Output Chart file path")
 
     args = parser.parse_args()
