@@ -2,21 +2,56 @@ NiPAMS VCG Blood Pressure Estimation
 ==============================
 [Work In Progress]
 
-## Overview
-Repository for all aspects of Exploratory Analysis, Processing, Modeling and Evaluation of NiPAMS Vibrational Cardiography (VCG) to Blood Pressure Estimation algoriths & system. 
+# Introduction
+## Research Objective
+Systematically Explore and Compare different Computational Approaches to Estimate Blood Pressure from a Vibrational Cardiography.
 
-Available both as a series of notebooks and/or an interactive dashboard/modeling application.
+## Important Considerations
+> __Purpose__ : 
+Observations & results from the questions below help understand the limitations of such a system and guide future development & deployments.
+
+- What level of accuracy is required?
+- Measuring Systolic or Diastolic blood pressures?
+- How quickly does the system need to produce readings?
+    - Every Heartbeat? 3s? 60s?
+- Can we calibrate the system to an individual patient or should it be general?
+    - How long does the calibration window need to be?
+- Different Exercises - Deep Breathing, Breath Holds, etc
+- What type of "model" to use?
+    - Continuum of approaches - Analytical to Statistical
+
+
+<!-- ## Data Overview -->
+## Input VCG signals
+![title](assets/timeline_input_vcg.png)
+
+## Target Blood Pressures
+![title](assets/timeline_target_bp.png)
+
+## Continuum of Approaches & Results
+<img src="assets/continuum_of_approaches.png" alt="preds_vs_actuals" width="1000"/>
+<!-- <img src="assets/deep_learning_preds_actuals.png" alt="preds_vs_actuals" width="300"/> -->
+
 
 <br/>
 
+
+
+
+# Get Started !
+## Package Overview
+Repository for all aspects of Exploratory Analysis, Processing, Modeling and Evaluation of NiPAMS Vibrational Cardiography (VCG) to Blood Pressure Estimation algoriths & system. 
+
+Available both as a series of notebooks and an interactive dashboard/modeling application.
+
+
 ## VCG Acquisition & Prediction Overview
+
 
 ![title](assets/Nipams_ML_Pipeline_Simplified.png)
 
 <br/>
 
-
-# Get Started !
 ## Run Analysis Engine
 1. Prerequisite : Install Docker (and Docker-Compose) - https://docs.docker.com/get-docker/
 
@@ -139,7 +174,7 @@ Recommend running larger jobs with paid Colab accounts for higher-memory.
 <br/><br/>
 
 # Life Cycle Operations
-
+Getting Started : 
 1. Connect to bash
     ```
     docker exec -it nipams-data-jupyterlab bash
@@ -158,10 +193,18 @@ Recommend running larger jobs with paid Colab accounts for higher-memory.
 
 
 
-## Loading & Preprocessing
+## 1 - Loading & Preprocessing
 __Description__ : The Loading & Preprocessing script will 
 
 __Script File__ : 1_load_data.py
+
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab
+    python src/scripts/1_load_data.py
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
 
 __Arguments__ :
 - **download.source** : This is the remote folder in which to search
@@ -174,10 +217,18 @@ __Arguments__ :
 
 <br/>
 
-## Graphing & Analysis
+## 2 - Graphing & Analysis
 __Description__ : The Graphing & Analysis script will 
 
 __Script File__ : 2_draw_chart.py
+
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab
+    python src/scripts/2_draw_chart.py
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
 
 __Arguments__ :
 - **input.folder** : This is the folder in which to search
@@ -188,10 +239,18 @@ __Arguments__ :
 
 <br/>
 
-## Feature & TimeSeries Vectorization
+## 3 - Feature & TimeSeries Vectorization
 __Description__ : The Feature & TimeSeries Vectorization script will 
 
 __Script File__ : 3_build_features.py
+
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab \
+    python src/scripts/3_build_features.py \
+                --input.file_path=./data/interim/df_HLV.pickle
+                --output.folder=./data/vectors
+```
 
 __Arguments__ :
 - **input.file_path** : This parameter points to the specific preprocessed dataset file
@@ -201,10 +260,18 @@ __Arguments__ :
 
 <br/>
 
-## Model Training & Prediction
+## 4 - Model Training & Prediction
 __Description__ : The Model Training & Prediction script will 
 
 __Script File__ : 4_train_model.py
+
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab
+    python src/scripts/4_train_model.py
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
 
 __Arguments__ :
 - **input.folder** : This parameter points to the specific folder in which to search
@@ -219,10 +286,18 @@ __Arguments__ :
 
 <br/>
 
-## Evaluation
+## 5 - Evaluation
 __Description__ : The Evaluation script takes a trained model and experiment_split to output the resulting model __score.__
 
 __Script__ File : 5_predict_and_evaluate.py
+
+__Execute Script__ :
+```
+docker exec -it nipams-data-jupyterlab \
+    python src/scripts/5_predict_and_evaluate.py \
+                --input.folder=./data/raw_mat
+                --output.folder=./data/interim
+```
 
 Arguments :
 - **input.folder** : This parameter points to the specific folder in which to search
