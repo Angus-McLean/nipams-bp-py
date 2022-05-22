@@ -11,7 +11,7 @@ from sklearn.model_selection import KFold, ShuffleSplit, TimeSeriesSplit, GroupK
 DEFAULTS = {
     "split_by_random" : """{"function":"split_by_random","kwargs": {
         "indices" : ["file", "heartbeat"], 
-        "split_kwargs" : {"n_splits":4, "test_size":0.2, "random_state":0}
+        "split_kwargs" : {"n_splits":4, "random_state":0}
     }}""",
     "split_by_group" : """{"function":"split_by_group","kwargs": {
         "group_col" : "patient",
@@ -101,7 +101,7 @@ def get_experiment_df(df, dfInds):
   return pd.merge(dfInds, df.reset_index(), on=dfInds.columns.to_list(), how='left')
 
 
-def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS, targetCol='sbp', n_splits=5, test_size=0.2, shuffle=True, testResults=None):
+def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS, targetCol='sbp', testResults=None):
     if testResults == None:
       testResults = []
     for experimentIndices in indices:
@@ -128,6 +128,49 @@ def testPipeline(dfImu, dfBp, pipeline, indices, verbose=False, dropCols=BP_COLS
     return testResults
 
 import json
+
+
+def create_results_df(target, dfBp, splits, results):
+  col_actual = f'{target}_actuals'
+  col_pred = f'{target}_preds'
+  dfTestRes = dfBp.copy().assign(fold_number=None, **{col_actual:None, col_pred:None})
+
+  for i, split in enumerate(splits):
+    df_bp = dfBp.loc[splits[i]['test'].set_index(INDICIES).index].reset_index()
+    dfPreds = pd.DataFrame([results[i]['y_test'].values,results[i]['preds']], index=[col_actual,f'{target}_preds']).T
+    dfPreds[INDICIES] = splits[i]['test'].reset_index()[INDICIES]
+    
+    dfRes = pd.merge(df_bp.set_index(INDICIES), dfPreds.set_index(INDICIES), left_index=True, right_index=True,)
+    dfRes = dfRes.assign(fold_number=i)
+    
+    dfTestRes.update(dfRes.drop(columns=BP_COLS))
+
+  return dfTestRes
+
+def run_experiment(id, dfImu, dfBp, pipe, splits):
+  rfResults1 = testPipeline(dfImu, dfBp, pipe, splits, targetCol='dbp', verbose=True)
+  rfResults2 = testPipeline(dfImu, dfBp, pipe, splits, targetCol='sbp', verbose=True)
+  rfResults3 = testPipeline(dfImu, dfBp, pipe, splits, targetCol='pp', verbose=True)
+
+  dfBpInd = dfBp.groupby(INDICIES).last()
+  dfResults1 = create_results_df('dbp', dfBpInd, splits, rfResults1)
+  dfResults2 = create_results_df('sbp', dfBpInd, splits, rfResults2)
+  dfResults3 = create_results_df('pp', dfBpInd, splits, rfResults3)
+
+  dfResults = dfResults1\
+    .merge(dfResults2, left_index=True, right_index=True, suffixes=('','_drop1'))\
+    .merge(dfResults3, left_index=True, right_index=True, suffixes=('','_drop2'))\
+    .assign(**{
+        'experiment_id' : id,
+        'pipeline' : ', '.join([i[0] for i in pipe.steps])
+    })
+
+  dfResults = dfResults.drop(columns=dfResults.columns[dfResults.columns.str.contains('_drop')])
+  dfResults = dfResults.reset_index()
+  # dfResults.file = dfResults.file.str.extract(pat='/[0-9]+_CCs_(sub[0-9]+_\w+).mat$')
+
+  return dfResults
+
 
 
 ### TODO : this isn't quite working yet
