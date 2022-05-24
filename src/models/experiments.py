@@ -45,8 +45,8 @@ def split_by_group(group_col=None, dfImu=None, dfBp=None, indices=['file', 'hear
   arrFoldInds = []
   for train_index, test_index in gkf.split(dfAllInds, groups=dfAllInds[group_col]):
     arrFoldInds.append({
-      'train' : dfAllInds.drop(group_col,axis=1).iloc[train_index],
-      'test' : dfAllInds.drop(group_col,axis=1).iloc[test_index]
+      'train' : dfAllInds.drop(group_col,axis=1).iloc[train_index].drop_duplicates(INDICIES),
+      'test' : dfAllInds.drop(group_col,axis=1).iloc[test_index].drop_duplicates(INDICIES)
     })
   return arrFoldInds
 
@@ -65,8 +65,8 @@ def split_by_query(trainQ=None, testQ=None, dfBp=None, indices=['file', 'heartbe
     train_index = dfTrain.sample(dfTrain.shape[0]//split_kwargs['n_splits']).reset_index()[indices]
     test_index = dfTest.sample(dfTest.shape[0]//split_kwargs['n_splits']).reset_index()[indices]
     arrFoldInds.append({
-        'train' : train_index,
-        'test' : test_index
+        'train' : train_index.drop_duplicates(INDICIES),
+        'test' : test_index.drop_duplicates(INDICIES)
     })
 
   return arrFoldInds
@@ -79,8 +79,8 @@ def random_split_indices(dfInds=None, split_kwargs={}):
   arrFoldInds = []
   for train_index, test_index in sss.split(dfInds):
     arrFoldInds.append({
-        'train' : dfInds.iloc[train_index],
-        'test' : dfInds.iloc[test_index]
+        'train' : dfInds.iloc[train_index].drop_duplicates(INDICIES),
+        'test' : dfInds.iloc[test_index].drop_duplicates(INDICIES)
     })
   
   return arrFoldInds
