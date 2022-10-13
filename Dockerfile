@@ -11,14 +11,6 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt -v
 
-COPY . /app
-# ADD . /app
-
-RUN useradd appuser && chown -R appuser /app
-RUN mkdir /home/appuser && chown -R appuser:appuser /home/appuser
-RUN chown -R appuser:appuser /app
-USER appuser
-
 ###########START NEW IMAGE : DEBUGGER ###################
 # FROM base as debug
 RUN pip install ptvsd
@@ -29,6 +21,16 @@ RUN pip install notebook jupyterlab
 EXPOSE 8888
 EXPOSE 8501
 EXPOSE 8502
+
+
+COPY . /app
+# ADD . /app
+
+# User Permissions
+RUN useradd appuser && chown -R appuser /app
+RUN mkdir /home/appuser && chown -R appuser:appuser /home/appuser
+RUN chown -R appuser:appuser /app
+USER appuser
 
 WORKDIR /app
 

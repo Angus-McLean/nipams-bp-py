@@ -200,10 +200,10 @@ __Script File__ : 1_load_data.py
 
 __Execute Script__ :
 ```
-docker exec -it nipams-data-jupyterlab
-    python src/scripts/1_load_data.py
-                --input.folder=./data/raw_mat
-                --output.folder=./data/interim
+docker exec -it nipams-data-jupyterlab \
+    python src/scripts/1_load_data.py \
+        --input.folder=./data/raw_mat \
+        --output.file_path=./data/interim/test-tmp
 ```
 
 __Arguments__ :
@@ -214,6 +214,7 @@ __Arguments__ :
 - **input.limit_files** : This is the limit_files variable
 - **preprocess.type** : This is the preprocess type input parameter
 - **output.file_path** : Output file path
+- **output.file_type** : Output file type
 
 <br/>
 
@@ -224,10 +225,10 @@ __Script File__ : 2_draw_chart.py
 
 __Execute Script__ :
 ```
-docker exec -it nipams-data-jupyterlab
-    python src/scripts/2_draw_chart.py
-                --input.folder=./data/raw_mat
-                --output.folder=./data/interim
+docker exec -it nipams-data-jupyterlab\
+    python src/scripts/2_draw_chart.py\
+                --input.data_path=./data/interim/test-oct12.pickle\
+                --output.file_path=./reports/test-tmp
 ```
 
 __Arguments__ :
@@ -248,8 +249,8 @@ __Execute Script__ :
 ```
 docker exec -it nipams-data-jupyterlab \
     python src/scripts/3_build_features.py \
-                --input.file_path=./data/interim/df_HLV.pickle
-                --output.folder=./data/vectors
+                --input.file_path=./data/interim/test-oct12.pickle\
+                --output.file_path=./data/vectors/test-oct12.feather
 ```
 
 __Arguments__ :
@@ -267,9 +268,9 @@ __Script File__ : 4_train_model.py
 
 __Execute Script__ :
 ```
-docker exec -it nipams-data-jupyterlab
-    python src/scripts/4_train_model.py
-                --input.folder=./data/raw_mat
+docker exec -it nipams-data-jupyterlab\
+    python src/scripts/4_train_model.py\
+                --input.folder=./data/raw_mat\
                 --output.folder=./data/interim
 ```
 
@@ -293,9 +294,9 @@ __Script__ File : 5_predict_and_evaluate.py
 
 __Execute Script__ :
 ```
-docker exec -it nipams-data-jupyterlab \
-    python src/scripts/5_predict_and_evaluate.py \
-                --input.folder=./data/raw_mat
+docker exec -it nipams-data-jupyterlab\
+    python src/scripts/5_predict_and_evaluate.py\
+                --input.folder=./data/raw_mat\
                 --output.folder=./data/interim
 ```
 

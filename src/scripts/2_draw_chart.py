@@ -1,7 +1,7 @@
 from utils.constants import *
 import argparse
 import plotly.express as px
-from data import load_data, preprocess
+from data import load_data
 
 
 
@@ -18,7 +18,7 @@ def main(args):
     fig = px.line(df_.select_dtypes(include=np.number).sort_values('ts').drop('ts',axis=1))
     
     print('Outputting TimeSeries Overview!')
-    fig.write_html(args['output.file_path'])
+    fig.write_html(args['output.file_path']+'.html')
 
 
     pass

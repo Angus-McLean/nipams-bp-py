@@ -23,7 +23,7 @@ var/
 .installed.cfg
 *.egg
 install.sh*
-src/old_libs/
+src/old_libs/*
 
 
 # PyInstaller

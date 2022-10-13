@@ -138,8 +138,8 @@ def load_dataframe_from_mat(folder, pattern=FILE_PATTERN_MAT, limit_files=10):
 
   return dfBpAll, dfImuAll
 
-def load_dataframe_from_pickle(folder, pattern=FILE_PATTERN_PICKLE):
-  files = fetch_data_from_local(folder, pattern)
+def load_dataframe_from_pickle(folder='.', pattern=FILE_PATTERN_PICKLE, path=None):
+  files = fetch_data_from_local(folder, pattern) if path is None else [path]
   arrDfs = [pd.read_pickle(f) for f in files]
   dfAll = pd.concat(arrDfs, axis=0)
 

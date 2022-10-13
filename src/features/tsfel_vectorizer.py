@@ -37,7 +37,7 @@ def transform_selectFeatures(selected_features):
   vectFeatureSelection = FunctionTransformer(partial(selectFeatures, features=selected_features))
   return vectFeatureSelection
 
-def panelTSDataToVectors(data, indicies, data_columns, domains=['statistical','temporal','spectral']):
+def panelTSDataToVectors(data, indicies=INDICIES, data_columns=IMU_DATA_COLS, domains=['statistical','temporal','spectral']):
     arrDfs = []
     for i in domains:
         cfg = tsfel.get_features_by_domain(i)
@@ -45,4 +45,4 @@ def panelTSDataToVectors(data, indicies, data_columns, domains=['statistical','t
         dfTsfelVects = dfTsfelVects.reset_index(level=2, drop=True)
         arrDfs.append(dfTsfelVects)
 
-    return pd.concat(arrDfs, axis=1)
+    return pd.concat(arrDfs, axis=1).replace((np.inf, -np.inf), np.NaN).fillna(0)

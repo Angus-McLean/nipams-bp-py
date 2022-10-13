@@ -8,9 +8,9 @@ pandas
 google-cloud-storage
 
 ### ML ###
-scipy
-sklearn
 tsfel
+scipy==1.8.1
+sklearn
 
 ### Viz ###
 matplotlib
