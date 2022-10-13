@@ -5,6 +5,8 @@
 
 ### Data ###
 pandas
+pandas-gbq
+google-cloud-bigquery
 google-cloud-storage
 
 ### ML ###
