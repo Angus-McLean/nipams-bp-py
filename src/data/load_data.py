@@ -1,7 +1,9 @@
 
 #@title Fetch and Parse Data
+import warnings
 from utils.constants import *
 from scipy.io import loadmat
+from scipy.io.matlab import MatReadWarning
 
 FILE_PATTERN_MAT = r'.*\.mat$'
 FILE_PATTERN_PICKLE = r'.*\.pickle$'
@@ -16,9 +18,9 @@ def fetch_data_from_local(folder='.',
   dfFiles = pd.DataFrame(list(os.walk(folder)), columns=['path','folders','files'])
   dfFiles = dfFiles.set_index('path').files.explode().reset_index()
   dfFiles['filenames'] = dfFiles.reset_index()['path'] + '/' + dfFiles.files
-  matchedFiles = dfFiles.filenames[dfFiles.filenames.str.contains(pat=pattern)][:limit_files]
+  matchedFiles = dfFiles.filenames[dfFiles.filenames.str.contains(pat=pattern)].iloc[:limit_files]
   
-  return matchedFiles[:limit_files]
+  return matchedFiles.iloc[:limit_files]
 
 
 #### GOOGLE DRIVE ####
@@ -69,7 +71,9 @@ def read_mat_files(filenames, continuous=True):
   for filename in arrFilenameSubset:
     # filename = 'data/raw_mat/'+blob.name.split('/')[-1]
     try:
-      imuFile = loadmat(filename)
+      with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=MatReadWarning)
+        imuFile = loadmat(filename)
     except : 
       print('ERROR loading mat file', filename)
 
@@ -131,7 +135,8 @@ def parseFileInfo(df, filenameCol='file'):
 #### EXECUTION ####
 def load_dataframe_from_mat(folder, pattern=FILE_PATTERN_MAT, limit_files=10):
   files = fetch_data_from_local(folder, pattern, limit_files=limit_files)
-  dfBpAll, dfImuAll = read_mat_files(files)
+  with warnings.catch_warnings():
+    dfBpAll, dfImuAll = read_mat_files(files)
 
   dfBpAll = parseFileInfo(dfBpAll)
   dfImuAll = parseFileInfo(dfImuAll)
