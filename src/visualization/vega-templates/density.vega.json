@@ -1,0 +1,37 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+
+  "layer": [
+    {
+      "mark": {
+        "type": "area",
+        "filled": true,
+        "opacity":0.4
+      },
+      "transform":[{
+        "density": "$metric0",
+        "bandwidth": 3,
+        "groupby": ["$dimension0"]
+      }, {
+        "calculate": "datum.density * datum.value",
+        "as": "avg_val"
+      }],
+      "encoding": {
+        "color": {
+          "field": "$dimension0",
+          "type": "ordinal", 
+          "scale": {"scheme": "category10"},
+          "sort": {"op": "mean", "field": "avg_val", "order":"ascending"}
+        },
+        "x": {
+          "field": "value",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "density",
+          "type": "quantitative"
+        }
+      }
+    }
+  ]
+}

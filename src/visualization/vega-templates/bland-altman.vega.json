@@ -1,0 +1,97 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+  "layer": [
+    {
+      "mark": {
+        "type": "point",
+        "opacity": 0.3,
+        "size": 1
+      },
+      "encoding": {
+        "color": {
+          "field": "$dimension0",
+          "type": "ordinal",
+          "scale": {
+            "scheme": "tableau20"
+          }
+        },
+        "x": {
+          "field": "$metric0",
+          "type": "quantitative",
+          "scale": {
+            "zero": false
+          }
+        },
+        "y": {
+          "field": "$metric1",
+          "type": "quantitative",
+          "scale": {
+            "zero": false
+          },
+          "title": "$metric1.name"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "joinaggregate": [
+            {
+              "op": "mean",
+              "field": "$metric1",
+              "as": "mean_difference"
+            },
+            {
+              "op": "stdev",
+              "field": "$metric1",
+              "as": "std_difference"
+            }
+          ]
+        },
+        {
+          "calculate": "datum.mean_difference + 1.96 * datum.std_difference",
+          "as": "upper_limit"
+        },
+        {
+          "calculate": "datum.mean_difference - 1.96 * datum.std_difference",
+          "as": "lower_limit"
+        }
+      ],
+      "layer": [
+        {
+          "encoding": { "y": { "field": "upper_limit", "type": "quantitative" } },
+          "layer": [
+            { "mark": { "type": "rule", "strokeWidth": 1, "strokeDash": [ 8, 8 ], "color": "red" } },
+            { "mark": { "type": "text", "align": "right", "fontSize": 14, "fontWeight": "lighter", "baseline": "middle", "dx": -5, "dy": 8, "yOffset": 0, "x": "width", "text": "+1.96 SD" } },
+            { 
+              "mark": { "type": "text", "align": "right", "fontSize": 14, "fontWeight": "lighter", "baseline": "middle", "dx": -5, "dy": -8, "yOffset": 0, "x": "width" },
+              "encoding": { "text": { "field": "upper_limit", "type": "quantitative", "format": ".2f" } }
+            }
+          ]
+        },
+        {
+          "encoding": { "y": { "field": "mean_difference", "type": "quantitative" } },
+          "layer": [
+            { "mark": { "type": "rule", "strokeWidth": 1, "strokeDash": [ 8, 8 ] } },
+            { "mark": { "type": "text", "align": "right", "fontSize": 14, "fontWeight": "lighter", "baseline": "middle", "dx": -5, "dy": 8, "yOffset": 0, "x": "width", "text": "Mean" } },
+            { 
+              "mark": { "type": "text", "align": "right", "fontSize": 14, "fontWeight": "lighter", "baseline": "middle", "dx": -5, "dy": -8, "yOffset": 0, "x": "width" },
+              "encoding": { "text": { "field": "mean_difference", "type": "quantitative", "format": ".2f" } }
+            }
+          ]
+        },
+        {
+          "encoding": { "y": { "field": "lower_limit", "type": "quantitative" } },
+          "layer": [
+            { "mark": { "type": "rule", "strokeWidth": 1, "strokeDash": [ 8, 8 ], "color": "red" } },
+            { "mark": { "type": "text", "align": "right", "fontSize": 14, "fontWeight": "lighter", "baseline": "middle", "dx": -5, "dy": 8, "yOffset": 0, "x": "width", "text": "-1.96 SD" } },
+            { 
+              "mark": { "type": "text", "align": "right", "fontSize": 14, "fontWeight": "lighter", "baseline": "middle", "dx": -5, "dy": -8, "yOffset": 0, "x": "width" },
+              "encoding": { "text": { "field": "lower_limit", "type": "quantitative", "format": ".2f" } }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
