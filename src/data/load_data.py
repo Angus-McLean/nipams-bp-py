@@ -3,7 +3,7 @@
 import warnings
 from utils.constants import *
 from scipy.io import loadmat
-from scipy.io.matlab import MatReadWarning
+# from scipy.io.matlab import MatReadWarning
 
 FILE_PATTERN_MAT = r'.*\.mat$'
 FILE_PATTERN_PICKLE = r'.*\.pickle$'
@@ -72,7 +72,8 @@ def read_mat_files(filenames, continuous=True):
     # filename = 'data/raw_mat/'+blob.name.split('/')[-1]
     try:
       with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=MatReadWarning)
+        # warnings.filterwarnings("ignore", category=MatReadWarning)
+        warnings.filterwarnings("ignore", message='Duplicate')
         imuFile = loadmat(filename)
     except : 
       print('ERROR loading mat file', filename)

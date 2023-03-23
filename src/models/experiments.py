@@ -38,7 +38,7 @@ def split_by_random(dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_
 
 ## https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html#sklearn.model_selection.GroupKFold
 def split_by_group(group_col=None, dfImu=None, dfBp=None, indices=['file', 'heartbeat'], split_kwargs={'n_splits':4}):
-  dfAllInds = dfBp.reset_index()[indices+[group_col]].drop_duplicates()
+  dfAllInds = dfBp.drop_duplicates().reset_index()[indices+[group_col]]
   # n_groups = dfAllInds[group_col].nunique() // split_kwargs['n_splits']
   gkf = GroupKFold(n_splits=split_kwargs['n_splits'])
   

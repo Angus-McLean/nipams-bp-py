@@ -26,12 +26,17 @@ def displacement(vcg_sig):
   dz = integrate.cumtrapz(y=vz-vz.mean(), x=serX[1:])
   return dz, vz
 
-
 ## Calculate RMS Envelope -- TODO : use timestamp for pd.rolling instead of np.convolve
 def window_rms(a, window_size):
   a2 = np.power(a,2)
   window = np.ones(window_size)/float(window_size)
-  return np.sqrt(np.convolve(a2, window, 'valid'))
+  try: 
+    res = np.sqrt(np.convolve(a2, window, 'valid'))
+    # print('window_rms success', window, a2)
+    return res
+  except Exception as e: 
+    print('window_rms eror', e, window, a2)
+    
 
 
 ########################## Plugin HELPERS ##########################
@@ -69,7 +74,14 @@ def calculate_BP_from_VCG(df_vcg, params={'k1':1.,'k2':1.}, pluginFns={}):
   # dXp_y, vXp_y = displacement(df_vcg['ay'])
   dXp_z, vXp_z = displacement(df_vcg['az'])
   # dXp_Norm = np.linalg.norm(np.array([dXp,dXp_y,dXp_z]), axis=0)
-  dXp_Norm = np.linalg.norm(np.array([np.nan_to_num(dXp,1.),np.nan_to_num(dXp_z,1.)]), axis=0)
+  pre_norm = np.array([
+    np.nan_to_num(dXp,1.),
+    np.nan_to_num(dXp_z,1.)
+  ])
+  pre_norm = pre_norm if (pre_norm.dtype == float) else pre_norm.astype(float)
+  pre_norm[pre_norm == 0.0] = 0.01
+  # print('pre_norm[0]', pre_norm[0])
+  dXp_Norm = np.linalg.norm(pre_norm, axis=0)
   # dXp_Norm = np.array([np.nan_to_num(dXp,1.)])
   
   # dAar, vAar = displacement(vcg_aar)
@@ -78,6 +90,9 @@ def calculate_BP_from_VCG(df_vcg, params={'k1':1.,'k2':1.}, pluginFns={}):
   plugin('disp',pluginFns, locals())
 
   ##### Respiration Volume #####
+  vcg_xp = vcg_xp if (vcg_xp.dtype == float) else vcg_xp.astype(float)
+  vcg_xp[vcg_xp==0] = 0.01
+
   RV = window_rms(vcg_xp, 20).max()
   plugin('RV',pluginFns, locals())
 

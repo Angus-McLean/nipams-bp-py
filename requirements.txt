@@ -1,7 +1,7 @@
 # local package
 # -e .
 # pytorch-cpu
-# tsai
+tsai
 
 ### Data ###
 pandas
